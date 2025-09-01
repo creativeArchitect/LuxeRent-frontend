@@ -6,7 +6,6 @@ import Home from "./pages/Home"
 import Dashboard from "./pages/Dashboard"
 import UserRentals from "./pages/UserRentals"
 import Cloth from "./pages/Cloth"
-import AdminManageClothes from "./pages/ManageClothes"
 import ManageClothes from "./pages/ManageClothes"
 
 function App() {

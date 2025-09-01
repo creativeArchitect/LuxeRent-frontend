@@ -1,51 +1,50 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { CheckSquare, Mail, Lock } from 'lucide-react';
+import { useState } from 'react';
+import { Mail, Lock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-const LuxeRentLogin = () => {
+const Login = () => {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
-        
-        {/* Logo and Brand */}
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-8"
-        >
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-500 rounded-xl mb-4">
-            <CheckSquare className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">LuxeRent</h1>
-          <p className="text-gray-600 text-sm">Premium clothing rental platform</p>
-        </motion.div>
+  const handleLogin = async ()=> {
+    try{
+      const data = {
+        email: email,
+        password: password
+      }
+  
+      const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/login`, data);
 
-        {/* Welcome Back Section */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-center mb-8"
-        >
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Welcome Back</h2>
-          <p className="text-gray-600 text-sm">Sign in to your account to continue</p>
-        </motion.div>
+      if(!res.data.success){
+        
+      }
+  
+      console.log("res after login user: ", res);
+    }catch(err){
+      
+    }
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-gray-50 px-4">
+      <div className="bg-white w-full max-w-md rounded-2xl shadow-md border border-gray-100 p-8">
+
+        {/* Title */}
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
+          <p className="text-gray-500 text-sm mt-1">
+            Sign in to your account to continue
+          </p>
+        </div>
 
         {/* Login Form */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="space-y-6"
-        >
-          
+        <div className="space-y-6">
           {/* Email Field */}
           <div>
-            <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+            <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
               <Mail className="w-4 h-4 mr-2" />
               Email
             </label>
@@ -54,13 +53,13 @@ const LuxeRentLogin = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
-              className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent"
             />
           </div>
 
           {/* Password Field */}
           <div>
-            <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+            <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
               <Lock className="w-4 h-4 mr-2" />
               Password
             </label>
@@ -69,51 +68,37 @@ const LuxeRentLogin = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
-              className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent"
             />
           </div>
 
           {/* Sign In Button */}
-          <button className="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200">
-            Sign In
+          <button className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-3 px-4 rounded-lg transition-colors hover:cursor-pointer">
+            Login
           </button>
 
           {/* Sign Up Link */}
           <p className="text-center text-sm text-gray-600">
-            Don't have an account?{' '}
-            <button className="text-slate-800 hover:text-slate-900 font-medium">
+            Don&apos;t have an account?{' '}
+            <button 
+              className="text-gray-900 font-medium hover:cursor-pointer hover:underline"
+              onClick={() => navigate('/register')}
+            >
               Sign up
             </button>
           </p>
-        </motion.div>
+        </div>
 
         {/* Demo Credentials */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-12 p-4 bg-gray-100 rounded-lg border"
-        >
-          <h3 className="text-sm font-medium text-gray-700 mb-3">Demo Credentials:</h3>
-          <div className="space-y-2 text-sm">
-            <div className="flex items-start">
-              <span className="font-medium text-gray-700 mr-1">Admin:</span>
-              <span className="text-gray-600">admin@example.com</span>
-            </div>
-            <div className="flex items-start">
-              <span className="font-medium text-gray-700 mr-1">Customer:</span>
-              <span className="text-gray-600">customer@example.com</span>
-            </div>
-            <div className="flex items-start">
-              <span className="font-medium text-gray-700 mr-1">Password:</span>
-              <span className="text-gray-600">Any password</span>
-            </div>
-          </div>
-        </motion.div>
-
+        <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700">
+          <p className="font-medium text-gray-900 mb-2">Demo Credentials:</p>
+          <p><span className="font-semibold">Admin:</span> admin@example.com</p>
+          <p><span className="font-semibold">Customer:</span> customer@example.com</p>
+          <p><span className="font-semibold">Password:</span> Any password</p>
+        </div>
       </div>
     </div>
   );
 };
 
-export default LuxeRentLogin;
+export default Login;

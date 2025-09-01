@@ -1,187 +1,166 @@
-import { Search, Filter, Star, Sparkles, LogOut } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Search, Filter, Star } from "lucide-react";
+import { motion } from "framer-motion";
+import Navbar from "../components/Navbar";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "sonner";
+import { useEffect, useState } from "react";
+import type { ClothesType } from "../types/ClothesType";
 
 const Home = () => {
   const featuredItems = [
     {
       id: 1,
-      brand: 'Sabyasachi',
-      name: 'Designer Lehenga',
-      category: 'Traditional',
+      brand: "Sabyasachi",
+      name: "Designer Lehenga",
+      category: "Traditional",
       price: 500,
       rating: 4.8,
-      status: 'Available',
-      image: '/api/placeholder/300/400',
-      bgColor: 'bg-blue-600'
+      status: "Available",
+      image: "/images/lehenga.jpg",
     },
     {
       id: 2,
-      brand: 'Hugo Boss',
-      name: 'Tuxedo Suit',
-      category: 'Formal',
+      brand: "Hugo Boss",
+      name: "Tuxedo Suit",
+      category: "Formal",
       price: 800,
       rating: 4.9,
-      status: 'Rented',
-      image: '/api/placeholder/300/400',
-      bgColor: 'bg-gray-900'
+      status: "Rented",
+      image: "/images/tuxedo.jpg",
     },
     {
       id: 3,
-      brand: 'Versace',
-      name: 'Cocktail Dress',
-      category: 'Party',
+      brand: "Versace",
+      name: "Cocktail Dress",
+      category: "Party",
       price: 350,
       rating: 4.7,
-      status: 'Available',
-      image: '/api/placeholder/300/400',
-      bgColor: 'bg-green-600'
+      status: "Available",
+      image: "/images/cocktail.jpg",
     },
     {
       id: 4,
-      brand: 'Zara',
-      name: 'Casual Blazer',
-      category: 'Casual',
+      brand: "Zara",
+      name: "Casual Blazer",
+      category: "Casual",
       price: 200,
       rating: 4.5,
-      status: 'Available',
-      image: '/api/placeholder/300/400',
-      bgColor: 'bg-navy-900'
-    }
+      status: "Available",
+      image: "/images/blazer.jpg",
+    },
   ];
 
-  const getStatusStyle = (status) => {
-    if (status === 'Available') return 'bg-green-500 text-white';
-    if (status === 'Rented') return 'bg-red-500 text-white';
-    return 'bg-gray-500 text-white';
+  const getStatusStyle = (status: string) => {
+    if (status === "Available") return "rounded-sm bg-green-500/10 text-green-500";
+    if (status === "Rented") return "rounded-sm bg-red-500/10 text-red-500";
+    return "bg-neutral-500/10 text-neutral-500";
   };
+
+  const navigate = useNavigate();
+  const [clothes, setClothes] = useState<ClothesType>();
+
+
+  // useEffect(()=> {
+  //   const getClothes = async ()=> {
+  //     try{
+  //       const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/all`)
+  
+  //       if(!res.data.success){
+  //         toast.error("Error in fetching clothes.");
+  //         return 
+  //       }
+  
+  //       console.log("res.data: ", res.data);
+  //       setClothes(res.data);
+  //     }catch(err){
+  //       toast.error("Error in fetching clothes.");
+  //       return
+  //     }
+  //   }
+  //   getClothes()
+
+  //   const interval = setInterval(getClothes, 5000);
+
+  //   return ()=> clearInterval(interval);
+  // }, [])
 
   return (
     <div className="min-h-screen bg-gray-50">
+
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-bold text-gray-900">LuxeRent</span>
-            </div>
+      <Navbar />
 
-            {/* Navigation */}
-            <nav className="hidden md:flex items-center space-x-8">
-              <button className="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
-                <Search className="w-4 h-4" />
-                <span>Browse Clothes</span>
-              </button>
-              <button className="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
-                <Filter className="w-4 h-4" />
-                <span>My Rentals</span>
-              </button>
-            </nav>
-
-            {/* User Menu */}
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gray-900 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                  J
-                </div>
-                <div className="hidden md:block">
-                  <div className="text-sm font-medium text-gray-900">John Customer</div>
-                  <div className="text-xs text-gray-500">Customer</div>
-                </div>
-              </div>
-              <button className="flex items-center space-x-1 text-gray-600 hover:text-gray-900">
-                <LogOut className="w-4 h-4" />
-                <span className="hidden md:inline">Logout</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Hero Section */}
+      {/* Hero */}
       <section className="bg-gradient-to-r from-gray-900 via-blue-900 to-gray-900 text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="max-w-7xl mx-auto text-center px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <div className="flex items-center justify-center mb-6">
-              <Sparkles className="w-8 h-8 text-yellow-400 mr-3" />
-              <h1 className="text-4xl md:text-6xl font-bold">
-                Premium Clothing
-              </h1>
-            </div>
+            <h1 className="text-4xl md:text-6xl font-bold mb-2">
+              Premium Clothing
+            </h1>
             <h2 className="text-4xl md:text-6xl font-bold mb-6">
               Rental Experience
             </h2>
-            <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-4xl mx-auto">
-              Discover luxury fashion from top designers. Rent premium clothing for
-              special occasions at a fraction of the cost.
+            <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-8">
+              Discover luxury fashion from top designers. Rent premium clothing
+              for special occasions at a fraction of the cost.
             </p>
-            
-            <div className="flex flex-wrap justify-center gap-8 text-sm md:text-base">
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                <span>Premium Brands</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                <span>Professional Cleaning</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                <span>Fast Delivery</span>
-              </div>
+            <div className="flex justify-center gap-6 text-sm md:text-base">
+              {["Premium Brands", "Professional Cleaning", "Fast Delivery"].map(
+                (feature, idx) => (
+                  <div key={idx} className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                    <span>{feature}</span>
+                  </div>
+                )
+              )}
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Search and Filter Section */}
-      <section className="bg-white py-8 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search by name, brand, or description..."
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+      {/* Search */}
+      <section className="bg-white py-6 shadow-sm">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-4 px-4">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Search by name, brand, or description..."
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <select className="appearance-none border border-gray-300 rounded-lg px-4 py-3 pr-8 focus:ring-2 focus:ring-blue-500">
+                <option>All Categories</option>
+                <option>Traditional</option>
+                <option>Formal</option>
+                <option>Party</option>
+                <option>Casual</option>
+              </select>
+              <Filter className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
             </div>
-            
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <select className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-3 pr-8 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                  <option>All Categories</option>
-                  <option>Traditional</option>
-                  <option>Formal</option>
-                  <option>Party</option>
-                  <option>Casual</option>
-                </select>
-                <Filter className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
-              </div>
-              
-              <div className="bg-yellow-500 text-white px-3 py-2 rounded-lg text-sm font-medium">
-                3 of 4 available
-              </div>
+            <div className="bg-yellow-500 text-white px-3 py-2 rounded-lg text-sm font-medium">
+              3 of 4 available
             </div>
           </div>
         </div>
       </section>
 
-      {/* Featured Collection */}
+      {/* Featured */}
       <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-8">
-            <h3 className="text-3xl font-bold text-gray-900 mb-2">Featured Collection</h3>
-            <p className="text-gray-600">Discover our premium clothing collection</p>
-          </div>
-
+        <div className="max-w-7xl mx-auto px-4">
+          <h3 className="text-3xl font-bold text-gray-900 mb-2">
+            Featured Collection
+          </h3>
+          <p className="text-gray-600 mb-8">
+            Discover our premium clothing collection
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredItems.map((item, index) => (
               <motion.div
@@ -189,50 +168,54 @@ const Home = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
               >
-                {/* Status Badge */}
                 <div className="relative">
-                  <div className={`absolute top-4 left-4 px-2 py-1 rounded-full text-xs font-medium ${getStatusStyle(item.status)}`}>
+                  <div
+                    className={`absolute top-4 right-4 px-2 py-1 rounded-full text-xs font-medium ${getStatusStyle(
+                      item.status
+                    )}`}
+                  >
                     {item.status}
                   </div>
-                  <div className="absolute top-4 right-4 bg-white bg-opacity-90 px-2 py-1 rounded-full text-xs font-medium text-gray-700">
+                  {/* <div className="absolute top-4 right-4 bg-white px-2 py-1 rounded-full text-xs font-medium text-gray-700">
                     {item.category}
-                  </div>
-                  
-                  {/* Image Placeholder */}
-                  <div className={`h-64 ${item.bgColor} flex items-center justify-center text-white`}>
-                    <div className="text-center">
-                      <div className="text-4xl mb-2">👗</div>
-                      <div className="text-sm opacity-75">{item.name}</div>
-                    </div>
-                  </div>
+                  </div> */}
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="h-64 w-full object-cover"
+                  />
                 </div>
-
-                {/* Card Content */}
                 <div className="p-6">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-500">{item.brand}</span>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm text-gray-500">{item.brand}</span>
                     <div className="flex items-center space-x-1">
                       <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                      <span className="text-sm text-gray-600">{item.rating}</span>
+                      <span className="text-sm text-gray-600">
+                        {item.rating}
+                      </span>
                     </div>
                   </div>
-                  
-                  <h4 className="text-lg font-semibold text-gray-900 mb-4">{item.name}</h4>
-                  
-                  <div className="flex items-center justify-between">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4">
+                    {item.name}
+                  </h4>
+                  <div className="flex justify-between items-center">
                     <div>
-                      <span className="text-2xl font-bold text-gray-900">₹{item.price}</span>
+                      <span className="text-2xl font-bold text-gray-900">
+                        ₹{item.price}
+                      </span>
                       <span className="text-sm text-gray-500 ml-1">/day</span>
                     </div>
-                    
-                    {item.status === 'Available' ? (
-                      <button className="bg-gray-900 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800 transition-colors">
+                    {item.status === "Available" ? (
+                      <button className="bg-neutral-900 text-white px-4 py-2 rounded-lg font-medium hover:bg-neutral-700 hover:cursor-pointer" onClick={()=> navigate('/cloth')}>
                         Rent Now
                       </button>
                     ) : (
-                      <button disabled className="bg-gray-300 text-gray-500 px-4 py-2 rounded-lg font-medium cursor-not-allowed">
+                      <button
+                        disabled
+                        className="text-neutral-500 border border-black/20 px-4 py-2 rounded-lg font-medium cursor-not-allowed"
+                      >
                         Not Available
                       </button>
                     )}
@@ -243,19 +226,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-
-      {/* Welcome Toast Notification */}
-      <div className="fixed bottom-4 right-4 bg-white rounded-lg shadow-lg border p-4 max-w-sm">
-        <div className="flex items-start space-x-3">
-          <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-            <span className="text-white text-sm">✓</span>
-          </div>
-          <div>
-            <p className="font-medium text-gray-900">Welcome back!</p>
-            <p className="text-sm text-gray-600">You have been logged in successfully.</p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

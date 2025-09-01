@@ -11,9 +11,28 @@ import {
   IndianRupee,
   Filter
 } from 'lucide-react';
+import { toast } from 'sonner';
+import axios from 'axios';
+import type { OrdersDetails } from '../types/OrderType';
 
 const UserRentals = () => {
   const [activeTab, setActiveTab] = useState('all');
+  const [rentalsData, setRentalsData] = useState<OrdersDetails>([]);
+
+  const getMyRentals = async ()=> {
+    try{
+      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/order/my`);
+
+      if(!res.data.success){
+        toast.error("Error in the fetching your rentals")
+      }
+
+      console.log("res.data: ", res.data);
+      setRentalsData(res.data);
+    }catch(err){
+      toast.error("Error in the fetching your rentals");
+    }
+  }
 
   // Sample rental data
   const rentals = [
@@ -75,7 +94,7 @@ const UserRentals = () => {
     { id: 'late', label: 'Late', count: 0, icon: AlertTriangle }
   ];
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'overdue':
         return 'bg-blue-100 text-blue-800';
@@ -88,7 +107,7 @@ const UserRentals = () => {
     }
   };
 
-  const getEndDateColor = (status) => {
+  const getEndDateColor = (status: string) => {
     return status === 'overdue' ? 'text-red-600' : 'text-gray-900';
   };
 
@@ -185,7 +204,7 @@ const UserRentals = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 flex items-center justify-center px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
+                className={`flex-1 flex items-center justify-center px-6 py-4 text-sm font-medium border-b-2 transition-colors hover:cursor-pointer ${
                   activeTab === tab.id
                     ? 'border-slate-800 text-slate-800'
                     : 'border-transparent text-gray-600 hover:text-gray-900'
@@ -218,7 +237,7 @@ const UserRentals = () => {
                     <h3 className="text-lg font-semibold text-gray-900">{rental.name}</h3>
                   </div>
                 </div>
-                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(rental.status)}`}>
+                <span className={`inline-flex items-center px-3 py-1 rounded-sm shadow-xs text-sm font-medium ${getStatusColor(rental.status)}`}>
                   {rental.statusLabel}
                 </span>
               </div>
