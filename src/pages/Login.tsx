@@ -1,37 +1,48 @@
-import { useState } from 'react';
-import { Mail, Lock } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { useState } from "react";
+import { Mail, Lock } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { useAuth } from "../context/authContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login, token } = useAuth();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const handleLogin = async ()=> {
-    try{
-      const data = {
-        email: email,
-        password: password
-      }
-  
-      const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/login`, data);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
-      if(!res.data.success){
-        
-      }
-  
-      console.log("res after login user: ", res);
-    }catch(err){
-      
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+
+      login(formData, token);
+
+      console.log(localStorage.getItem("auth"));
+
+      navigate("/home");
+      toast.success("User registered successfully!");
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Error logging user.");
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-gray-50 px-4">
       <div className="bg-white w-full max-w-md rounded-2xl shadow-md border border-gray-100 p-8">
-
         {/* Title */}
         <div className="text-center mb-8">
           <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
@@ -50,8 +61,9 @@ const Login = () => {
             </label>
             <input
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
               placeholder="Enter your email"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent"
             />
@@ -65,24 +77,28 @@ const Login = () => {
             </label>
             <input
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
               placeholder="Enter your password"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent"
             />
           </div>
 
           {/* Sign In Button */}
-          <button className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-3 px-4 rounded-lg transition-colors hover:cursor-pointer">
+          <button
+            className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-3 px-4 rounded-lg transition-colors hover:cursor-pointer"
+            onClick={handleLogin}
+          >
             Login
           </button>
 
           {/* Sign Up Link */}
           <p className="text-center text-sm text-gray-600">
-            Don&apos;t have an account?{' '}
-            <button 
+            Don&apos;t have an account?{" "}
+            <button
               className="text-gray-900 font-medium hover:cursor-pointer hover:underline"
-              onClick={() => navigate('/register')}
+              onClick={() => navigate("/register")}
             >
               Sign up
             </button>
@@ -92,9 +108,16 @@ const Login = () => {
         {/* Demo Credentials */}
         <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700">
           <p className="font-medium text-gray-900 mb-2">Demo Credentials:</p>
-          <p><span className="font-semibold">Admin:</span> admin@example.com</p>
-          <p><span className="font-semibold">Customer:</span> customer@example.com</p>
-          <p><span className="font-semibold">Password:</span> Any password</p>
+          <p>
+            <span className="font-semibold">Admin:</span> admin@example.com
+          </p>
+          <p>
+            <span className="font-semibold">Customer:</span>{" "}
+            customer@example.com
+          </p>
+          <p>
+            <span className="font-semibold">Password:</span> Any password
+          </p>
         </div>
       </div>
     </div>

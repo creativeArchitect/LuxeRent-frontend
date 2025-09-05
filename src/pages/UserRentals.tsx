@@ -1,124 +1,136 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { 
-  CheckSquare, 
-  LogOut, 
-  Calendar, 
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import {
+  CheckSquare,
+  LogOut,
+  Calendar,
   CheckCircle,
   Package,
   Clock,
   AlertTriangle,
   IndianRupee,
-  Filter
-} from 'lucide-react';
-import { toast } from 'sonner';
-import axios from 'axios';
-import type { OrdersDetails } from '../types/OrderType';
+  Filter,
+} from "lucide-react";
+import { toast } from "sonner";
+import axios from "axios";
+import type { OrdersDetails } from "../types/OrderType";
+// import { useRentalStore } from "../store/rentalStore";
+import Loading from "../components/Loading";
+import Navbar from "../components/Navbar";
+import { useAuth } from "../context/authContext";
 
 const UserRentals = () => {
-  const [activeTab, setActiveTab] = useState('all');
-  const [rentalsData, setRentalsData] = useState<OrdersDetails>([]);
+  const [activeTab, setActiveTab] = useState("all");
 
-  const getMyRentals = async ()=> {
-    try{
-      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/order/my`);
+  const [totalRentals, setTotalRentals] = useState();
 
-      if(!res.data.success){
-        toast.error("Error in the fetching your rentals")
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    console.log("token:", token)
+    const fetchRentals = async () => {
+      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/order/my`, { headers: { Authorization: `Bearer ${token}` } });
+
+      if (!res.data.success) {
+        toast.error(res.data.message|| "error in fetch rentals of user")
       }
 
-      console.log("res.data: ", res.data);
-      setRentalsData(res.data);
-    }catch(err){
-      toast.error("Error in the fetching your rentals");
-    }
-  }
+      setTotalRentals(res.data?.orders);
+
+    };
+    fetchRentals();
+
+    console.log("totalRentals: ", totalRentals);
+
+    const interval = setInterval(fetchRentals, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Sample rental data
   const rentals = [
     {
       id: 1,
-      name: 'Designer Lehenga',
-      status: 'overdue',
-      statusLabel: 'Overdue',
-      startDate: 'Aug 1, 2023',
-      endDate: 'Aug 5, 2023',
+      name: "Designer Lehenga",
+      status: "overdue",
+      statusLabel: "Overdue",
+      startDate: "Aug 1, 2023",
+      endDate: "Aug 5, 2023",
       totalAmount: 2000,
-      icon: Package
+      icon: Package,
     },
     {
       id: 2,
-      name: 'Cocktail Dress',
-      status: 'returned',
-      statusLabel: 'Returned',
-      startDate: 'Jul 15, 2023',
-      endDate: 'Jul 17, 2023',
+      name: "Cocktail Dress",
+      status: "returned",
+      statusLabel: "Returned",
+      startDate: "Jul 15, 2023",
+      endDate: "Jul 17, 2023",
       totalAmount: 700,
-      icon: Package
-    }
+      icon: Package,
+    },
   ];
 
   // Stats data
   const stats = [
     {
-      title: 'Total Rentals',
-      value: '2',
-      subtitle: 'All time rentals',
-      icon: Package
+      title: "Total Rentals",
+      value: "2",
+      subtitle: "All time rentals",
+      icon: Package,
     },
     {
-      title: 'Active Rentals',
-      value: '1',
-      subtitle: 'Currently ongoing',
-      icon: Clock
+      title: "Active Rentals",
+      value: "1",
+      subtitle: "Currently ongoing",
+      icon: Clock,
     },
     {
-      title: 'Completed',
-      value: '1',
-      subtitle: 'Successfully returned',
-      icon: CheckCircle
+      title: "Completed",
+      value: "1",
+      subtitle: "Successfully returned",
+      icon: CheckCircle,
     },
     {
-      title: 'Total Spent',
-      value: '₹2,700',
-      subtitle: 'Lifetime spending',
-      icon: IndianRupee
-    }
+      title: "Total Spent",
+      value: "₹2,700",
+      subtitle: "Lifetime spending",
+      icon: IndianRupee,
+    },
   ];
 
   // Tab data
   const tabs = [
-    { id: 'all', label: 'All', count: 2, icon: Package },
-    { id: 'ongoing', label: 'Ongoing', count: 1, icon: Clock },
-    { id: 'returned', label: 'Returned', count: 1, icon: CheckCircle },
-    { id: 'late', label: 'Late', count: 0, icon: AlertTriangle }
+    { id: "all", label: "All", count: 2, icon: Package },
+    { id: "ongoing", label: "Ongoing", count: 1, icon: Clock },
+    { id: "returned", label: "Returned", count: 1, icon: CheckCircle },
+    { id: "late", label: "Late", count: 0, icon: AlertTriangle },
   ];
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'overdue':
-        return 'bg-blue-100 text-blue-800';
-      case 'returned':
-        return 'bg-green-100 text-green-800';
-      case 'ongoing':
-        return 'bg-yellow-100 text-yellow-800';
+      case "overdue":
+        return "bg-blue-100 text-blue-800";
+      case "returned":
+        return "bg-green-100 text-green-800";
+      case "ongoing":
+        return "bg-yellow-100 text-yellow-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getEndDateColor = (status: string) => {
-    return status === 'overdue' ? 'text-red-600' : 'text-gray-900';
+    return status === "overdue" ? "text-red-600" : "text-gray-900";
   };
 
-  const filteredRentals = rentals.filter(rental => {
+  const filteredRentals = rentals.filter((rental) => {
     switch (activeTab) {
-      case 'ongoing':
-        return rental.status === 'overdue'; // Overdue is considered ongoing
-      case 'returned':
-        return rental.status === 'returned';
-      case 'late':
-        return rental.status === 'late';
+      case "ongoing":
+        return rental.status === "overdue"; // Overdue is considered ongoing
+      case "returned":
+        return rental.status === "returned";
+      case "late":
+        return rental.status === "late";
       default:
         return true;
     }
@@ -127,73 +139,37 @@ const UserRentals = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Navigation */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
-          {/* Logo */}
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center">
-              <CheckSquare className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-bold text-gray-900">LuxeRent</span>
-          </div>
-
-          {/* Navigation Links */}
-          <div className="hidden md:flex items-center space-x-8">
-            <button className="flex items-center text-gray-600 hover:text-gray-900">
-              <Calendar className="w-4 h-4 mr-2" />
-              Browse Clothes
-            </button>
-            <button className="flex items-center text-gray-900 font-medium">
-              <CheckCircle className="w-4 h-4 mr-2" />
-              My Rentals
-            </button>
-          </div>
-
-          {/* User Profile */}
-          <div className="flex items-center space-x-4">
-            <div className="text-right hidden sm:block">
-              <div className="text-sm font-medium text-gray-900">John Customer</div>
-              <div className="text-xs text-gray-600">Customer</div>
-            </div>
-            <div className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center text-white font-medium">
-              J
-            </div>
-            <button className="text-gray-600 hover:text-gray-900">
-              <LogOut className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8">
         {/* Page Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">My Rentals</h1>
-          <p className="text-gray-600">Manage your rental history and track current orders</p>
+          <p className="text-gray-600">
+            Manage your rental history and track current orders
+          </p>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {stats.map((stat, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white rounded-xl border border-gray-200 p-6"
-            >
+            <div className="bg-white rounded-xl border border-gray-200 p-6" key={index}>
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <div className="text-sm font-medium text-gray-600 mb-1">{stat.title}</div>
-                  <div className="text-3xl font-bold text-gray-900 mb-1">{stat.value}</div>
+                  <div className="text-sm font-medium text-gray-600 mb-1">
+                    {stat.title}
+                  </div>
+                  <div className="text-3xl font-bold text-gray-900 mb-1">
+                    {stat.value}
+                  </div>
                   <div className="text-xs text-gray-600">{stat.subtitle}</div>
                 </div>
                 <div className="w-12 h-12 bg-gray-50 rounded-lg flex items-center justify-center">
                   <stat.icon className="w-6 h-6 text-gray-600" />
                 </div>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 
@@ -206,8 +182,8 @@ const UserRentals = () => {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex-1 flex items-center justify-center px-6 py-4 text-sm font-medium border-b-2 transition-colors hover:cursor-pointer ${
                   activeTab === tab.id
-                    ? 'border-slate-800 text-slate-800'
-                    : 'border-transparent text-gray-600 hover:text-gray-900'
+                    ? "border-slate-800 text-slate-800"
+                    : "border-transparent text-gray-600 hover:text-gray-900"
                 }`}
               >
                 <tab.icon className="w-4 h-4 mr-2" />
@@ -220,11 +196,8 @@ const UserRentals = () => {
         {/* Rentals List */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {filteredRentals.map((rental, index) => (
-            <motion.div
+            <div
               key={rental.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
               className="bg-white rounded-xl border border-gray-200 p-6"
             >
               {/* Header */}
@@ -234,10 +207,16 @@ const UserRentals = () => {
                     <rental.icon className="w-5 h-5 text-gray-600" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">{rental.name}</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {rental.name}
+                    </h3>
                   </div>
                 </div>
-                <span className={`inline-flex items-center px-3 py-1 rounded-sm shadow-xs text-sm font-medium ${getStatusColor(rental.status)}`}>
+                <span
+                  className={`inline-flex items-center px-3 py-1 rounded-sm shadow-xs text-sm font-medium ${getStatusColor(
+                    rental.status
+                  )}`}
+                >
                   {rental.statusLabel}
                 </span>
               </div>
@@ -249,14 +228,18 @@ const UserRentals = () => {
                     <Calendar className="w-4 h-4 mr-2" />
                     <span className="text-sm">Start Date</span>
                   </div>
-                  <div className="font-medium text-gray-900">{rental.startDate}</div>
+                  <div className="font-medium text-gray-900">
+                    {rental.startDate}
+                  </div>
                 </div>
                 <div>
                   <div className="flex items-center text-gray-600 mb-2">
                     <Clock className="w-4 h-4 mr-2" />
                     <span className="text-sm">End Date</span>
                   </div>
-                  <div className={`font-medium ${getEndDateColor(rental.status)}`}>
+                  <div
+                    className={`font-medium ${getEndDateColor(rental.status)}`}
+                  >
                     {rental.endDate}
                   </div>
                 </div>
@@ -274,7 +257,7 @@ const UserRentals = () => {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 
@@ -282,8 +265,12 @@ const UserRentals = () => {
         {filteredRentals.length === 0 && (
           <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
             <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No rentals found</h3>
-            <p className="text-gray-600">No rentals match the selected filter.</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              No rentals found
+            </h3>
+            <p className="text-gray-600">
+              No rentals match the selected filter.
+            </p>
           </div>
         )}
       </main>

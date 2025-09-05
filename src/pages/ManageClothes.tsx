@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Search,
   Plus,
@@ -12,8 +12,19 @@ import {
   Sparkles,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import Navbar from "../components/Navbar";
+import AddClothingModal from "../components/ItemModal";
+import axios from "axios";
+import type { ModalDataType } from "../types/ModalType";
+import { toast } from "sonner";
+import type { ClothesType } from "../types/ClothesType";
+import { AiOutlineCodeSandbox } from "react-icons/ai";
+import { useAuth } from "../context/authContext";
 
 const ManageClothes: React.FC = () => {
+  // const [inventoryItems, setInventoryItems] = useState<ClothesType>();
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  
   const inventoryItems = [
     {
       id: 1,
@@ -23,11 +34,10 @@ const ManageClothes: React.FC = () => {
       category: "Traditional",
       brand: "Sabyasachi",
       price: 500,
-      rating: 4.8,
+      // rating: 4.8,
       status: "Available",
       sizes: ["S", "M", "L"],
       image: "👘",
-      color: "bg-blue-600",
     },
     {
       id: 2,
@@ -36,11 +46,10 @@ const ManageClothes: React.FC = () => {
       category: "Formal",
       brand: "Hugo Boss",
       price: 800,
-      rating: 4.9,
+      // rating: 4.9,
       status: "Rented",
       sizes: ["M", "L", "XL"],
       image: "🤵",
-      color: "bg-gray-900",
     },
     {
       id: 3,
@@ -50,11 +59,10 @@ const ManageClothes: React.FC = () => {
       category: "Party",
       brand: "Versace",
       price: 350,
-      rating: 4.7,
+      // rating: 4.7,
       status: "Available",
       sizes: ["XS", "S", "M"],
       image: "👗",
-      color: "bg-green-600",
     },
     {
       id: 4,
@@ -63,18 +71,17 @@ const ManageClothes: React.FC = () => {
       category: "Casual",
       brand: "Zara",
       price: 200,
-      rating: 4.5,
+      // rating: 4.5,
       status: "Available",
       sizes: ["S", "M", "L", "XL"],
       image: "🧥",
-      color: "bg-slate-800",
     },
   ];
 
   const getStatusStyle = (status: string) => {
-    if (status === "Available") return "bg-green-500 text-white";
-    if (status === "Rented") return "bg-red-500 text-white";
-    return "bg-gray-500 text-white";
+    if (status === "Available") return "rounded-sm bg-green-500/10 text-green-500";
+    if (status === "Rented") return "bg-red-500/10 text-red-500 rounded-sm";
+    return "bg-gray-500 text-gray-500 rounded-sm";
   };
 
   const getSizeStyle = (size: string) => {
@@ -90,57 +97,51 @@ const ManageClothes: React.FC = () => {
     return `${baseStyle} ${colors[size] || "bg-gray-100 text-gray-800"}`;
   };
 
+
+  useEffect(()=> {
+    const fetchClothes = async ()=> {
+      const token = localStorage.getItem('token');
+      try{
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/order/all`,{ 
+          headers: { Authorization: `Bearer ${token}` } 
+        });
+
+        console.log(res.data.clothes);
+
+        // setInventoryItems(res.data.clothes);
+  
+      }catch(err: any){
+        toast.error(err.response?.data?.message || "Error fetching clothes");
+      }
+    }
+    fetchClothes()
+
+    const interval = setInterval(fetchClothes, 5000);
+
+    return ()=> clearInterval(interval);
+  }, []);
+
+
+  const handleSubmitModal = async (formData: ModalDataType)=> {
+    try{
+      const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/cloth/`, formData);
+
+      if (!res.data.success) {
+        toast.error(res.data.message || "Registration failed.");
+      }
+
+      console.log("res after login user: ", res);
+
+      toast.success("User registered successfully!");
+    }catch(err: any){
+      toast.error(err.response?.data?.message || "Error logging user.");
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-bold text-gray-900">LuxeRent</span>
-            </div>
-
-            {/* Navigation */}
-            <nav className="hidden md:flex items-center space-x-8">
-              <button className="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
-                <BarChart3 className="w-4 h-4" />
-                <span>Dashboard</span>
-              </button>
-              <button className="flex items-center space-x-2 text-blue-600 font-medium">
-                <Shirt className="w-4 h-4" />
-                <span>Manage Clothes</span>
-              </button>
-              <button className="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
-                <List className="w-4 h-4" />
-                <span>Manage Rentals</span>
-              </button>
-            </nav>
-
-            {/* User Menu */}
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gray-900 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                  A
-                </div>
-                <div className="hidden md:block">
-                  <div className="text-sm font-medium text-gray-900">
-                    Admin User
-                  </div>
-                  <div className="text-xs text-gray-500">Admin</div>
-                </div>
-              </div>
-              <button className="flex items-center space-x-1 text-gray-600 hover:text-gray-900">
-                <LogOut className="w-4 h-4" />
-                <span className="hidden md:inline">Logout</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -157,12 +158,14 @@ const ManageClothes: React.FC = () => {
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="mt-4 md:mt-0 bg-gray-900 hover:bg-gray-800 text-white px-6 py-3 rounded-lg font-medium flex items-center space-x-2 transition-colors"
+            className="mt-4 md:mt-0 bg-gray-900 hover:bg-gray-800 text-white px-6 py-3 rounded-lg font-medium flex items-center space-x-2 transition-colors hover: cursor-pointer" onClick={ ()=> setOpenModal(true) }
           >
             <Plus className="w-5 h-5" />
             <span>Add New Item</span>
           </motion.button>
         </div>
+
+        <AddClothingModal isOpen={openModal} onClose={()=> setOpenModal(false)} onSubmit={handleSubmitModal} />
 
         {/* Search Bar and Stats */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
@@ -196,7 +199,7 @@ const ManageClothes: React.FC = () => {
         </div>
 
         {/* Inventory Table */}
-        <motion.div
+        <div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -205,8 +208,10 @@ const ManageClothes: React.FC = () => {
           {/* Table Header */}
           <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
             <div className="flex items-center space-x-2">
-              <div className="w-6 h-6 bg-gray-600 rounded-full flex items-center justify-center">
-                <span className="text-white text-xs">📦</span>
+              <div className="w-6 h-6 rounded-full flex items-center justify-center">
+                <span className="text-white text-xs">
+                  <AiOutlineCodeSandbox color="black" size={22  } />
+                </span>
               </div>
               <h3 className="text-lg font-semibold text-gray-900">
                 Inventory ({inventoryItems.length} items)
@@ -231,9 +236,9 @@ const ManageClothes: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Price/Day
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Rating
-                  </th>
+                  </th> */}
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
                   </th>
@@ -247,7 +252,7 @@ const ManageClothes: React.FC = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {inventoryItems.map((item, index) => (
-                  <motion.tr
+                  <tr
                     key={item.id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -295,19 +300,19 @@ const ManageClothes: React.FC = () => {
                     </td>
 
                     {/* Rating */}
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    {/* <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center space-x-1">
                         <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
                         <span className="text-sm text-gray-900">
                           {item.rating}
                         </span>
                       </div>
-                    </td>
+                    </td> */}
 
                     {/* Status */}
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusStyle(
+                        className={`inline-flex px-2.5 py-1.5 text-xs font-semibold rounded-sm ${getStatusStyle(
                           item.status
                         )}`}
                       >
@@ -337,12 +342,12 @@ const ManageClothes: React.FC = () => {
                         </button>
                       </div>
                     </td>
-                  </motion.tr>
+                  </tr>
                 ))}
               </tbody>
             </table>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

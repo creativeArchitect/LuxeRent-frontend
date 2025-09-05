@@ -1,48 +1,64 @@
-import { useState } from 'react';
-import { User, Mail, Lock, Users, Crown } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { useState } from "react";
+import { User, Mail, Lock, Users, Crown } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import type { Role } from "../types/UserType";
+import { useAuth } from "../context/authContext";
 
 const Register = () => {
   const navigate = useNavigate();
 
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  // const [accountType, setAccountType] = useState('customer');
+  const { register } = useAuth();
 
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    role: "user"
+  });
+  const [loading, setLoading] = useState<boolean>(false);
+  const [accountType, setAccountType] = useState<Role>();
 
-  const handleSubmit = async ()=> {
-    try{
-      const data = {
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        password: password,
-        // accountType: accountType
-      }
-      const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/register`, data);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+      role: accountType as Role
+    });
+  };
 
-      if(!res.data.success){
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      register({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+        role: formData.role as Role
+      })
 
-      }
-  
-      console.log("res after register user: ", res);
-    }catch(err){
+      console.log(localStorage.getItem("auth"));
+      console.log(localStorage.getItem("token"));
 
+      navigate("/home");
+
+      toast.success("User registered successfully!");
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Error registering user.");
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-gray-50 px-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-md border border-gray-100 p-8">
-
         {/* Title */}
         <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900" onClick={()=> {
-            handleSubmit()
-          }}>Create Account</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Create Account</h1>
           <p className="text-gray-500 text-sm mt-1">
             Sign up to start renting premium clothing
           </p>
@@ -50,7 +66,6 @@ const Register = () => {
 
         {/* Form */}
         <div className="space-y-5">
-
           {/* First Name */}
           <div>
             <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
@@ -59,10 +74,12 @@ const Register = () => {
             </label>
             <input
               type="text"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              placeholder="Enter your full name"
+              name="firstName"
+              value={formData.firstName}
+              onChange={handleChange}
+              placeholder="Enter your first name"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent"
+              required
             />
           </div>
 
@@ -74,9 +91,10 @@ const Register = () => {
             </label>
             <input
               type="text"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              placeholder="Enter your full name"
+              name="lastName"
+              value={formData.lastName}
+              onChange={handleChange}
+              placeholder="Enter your last name"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent"
             />
           </div>
@@ -89,10 +107,12 @@ const Register = () => {
             </label>
             <input
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
               placeholder="Enter your email"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent"
+              required
             />
           </div>
 
@@ -104,22 +124,24 @@ const Register = () => {
             </label>
             <input
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
               placeholder="Create a password (min. 6 characters)"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent"
+              required
             />
           </div>
 
           {/* Account Type */}
-          {/* <div>
+          <div>
             <label className="text-sm font-medium text-gray-700 mb-2 block">Account Type</label>
-            <div className="grid grid-cols-2 gap-3"> */}
-              {/* Customer */}
-              {/* <div 
-                onClick={() => setAccountType('customer')}
+            <div className="grid grid-cols-2 gap-3">
+          {/* Customer */}
+          <div 
+                onClick={() => setAccountType('user')}
                 className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                  accountType === 'customer'
+                  accountType === 'user'
                     ? 'border-gray-900 bg-gray-50'
                     : 'border-gray-300 hover:bg-gray-100 hover:border-gray-400'
                 }`}
@@ -129,10 +151,10 @@ const Register = () => {
                   <h3 className="font-medium text-gray-900">Customer</h3>
                   <p className="text-xs text-gray-500">Rent premium clothes</p>
                 </div>
-              </div> */}
+              </div>
 
-              {/* Admin */}
-              {/* <div 
+          {/* Admin */}
+          <div 
                 onClick={() => setAccountType('admin')}
                 className={`p-4 rounded-lg border cursor-pointer transition-all ${
                   accountType === 'admin'
@@ -145,21 +167,25 @@ const Register = () => {
                   <h3 className="font-medium text-gray-900">Admin</h3>
                   <p className="text-xs text-gray-500">Manage platform</p>
                 </div>
-              </div> */}
-            {/* </div>
-          </div> */}
+              </div>
+          </div>
+          </div>
 
           {/* Create Account */}
-          <button className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-3 px-4 rounded-lg transition-colors hover:cursor-pointer">
+          <button
+            className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-3 px-4 rounded-lg transition-colors hover:cursor-pointer"
+            name="submit"
+            onClick={handleSubmit}
+          >
             Create Account
           </button>
 
           {/* Sign In */}
           <p className="text-center text-sm text-gray-600">
-            Already have an account?{' '}
-            <button 
+            Already have an account?{" "}
+            <button
               className="text-gray-900 font-medium hover:underline hover:cursor-pointer"
-              onClick={() => navigate('/login')}
+              onClick={() => navigate("/login")}
             >
               Sign in
             </button>

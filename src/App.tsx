@@ -7,21 +7,24 @@ import Dashboard from "./pages/Dashboard"
 import UserRentals from "./pages/UserRentals"
 import Cloth from "./pages/Cloth"
 import ManageClothes from "./pages/ManageClothes"
+import { AuthProvider } from './context/authContext'
 
 function App() {
 
   return (
     <div>
-      <Routes>
-        <Route path="/" element={<Hero />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/my-rentals" element={<UserRentals />} />
-        <Route path="/cloth" element={<Cloth />} />
-        <Route path="/manage-cloth" element={<ManageClothes />} />
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<Hero />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/my-rentals" element={<UserRentals />} />
+          <Route path="/cloth" element={<Cloth />} />
+          <Route path="/manage-rentals" element={<ManageClothes />} />
+        </Routes>
+      </AuthProvider>
     </div>
   )
 }

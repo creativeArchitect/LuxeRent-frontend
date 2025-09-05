@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
-import type { ClothesType } from "../types/ClothesType";
+import type { Cloth, ClothesType } from "../types/ClothesType";
 
 const Home = () => {
   const featuredItems = [
@@ -51,14 +51,19 @@ const Home = () => {
     },
   ];
 
+  const navigate = useNavigate();
+  const [clothes, setClothes] = useState<ClothesType>();
+
+  const handleFilter = async (e: React.ChangeEvent<HTMLSelectElement>)=> {
+    const filterValue = e.target.value;
+    setClothes(clothes.filter((cloth: Cloth)=> cloth.category === filterValue))
+  }
+
   const getStatusStyle = (status: string) => {
     if (status === "Available") return "rounded-sm bg-green-500/10 text-green-500";
     if (status === "Rented") return "rounded-sm bg-red-500/10 text-red-500";
     return "bg-neutral-500/10 text-neutral-500";
   };
-
-  const navigate = useNavigate();
-  const [clothes, setClothes] = useState<ClothesType>();
 
 
   // useEffect(()=> {
@@ -94,7 +99,7 @@ const Home = () => {
       {/* Hero */}
       <section className="bg-gradient-to-r from-gray-900 via-blue-900 to-gray-900 text-white py-20">
         <div className="max-w-7xl mx-auto text-center px-4">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
@@ -119,7 +124,7 @@ const Home = () => {
                 )
               )}
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -145,9 +150,9 @@ const Home = () => {
               </select>
               <Filter className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
             </div>
-            <div className="bg-yellow-500 text-white px-3 py-2 rounded-lg text-sm font-medium">
+            {/* <div className="bg-yellow-500 text-white px-3 py-2 rounded-lg text-sm font-medium">
               3 of 4 available
-            </div>
+            </div> */}
           </div>
         </div>
       </section>
@@ -163,7 +168,7 @@ const Home = () => {
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredItems.map((item, index) => (
-              <motion.div
+              <div
                 key={item.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -208,20 +213,20 @@ const Home = () => {
                       <span className="text-sm text-gray-500 ml-1">/day</span>
                     </div>
                     {item.status === "Available" ? (
-                      <button className="bg-neutral-900 text-white px-4 py-2 rounded-lg font-medium hover:bg-neutral-700 hover:cursor-pointer" onClick={()=> navigate('/cloth')}>
+                      <button className="bg-neutral-900 text-white px-4 py-2 rounded-md font-medium hover:bg-neutral-700 hover:cursor-pointer" onClick={()=> navigate('/cloth')}>
                         Rent Now
                       </button>
                     ) : (
                       <button
                         disabled
-                        className="text-neutral-500 border border-black/20 px-4 py-2 rounded-lg font-medium cursor-not-allowed"
+                        className="text-neutral-500 border border-black/20 px-2 py-1.5 rounded-md font-medium cursor-not-allowed"
                       >
                         Not Available
                       </button>
                     )}
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
