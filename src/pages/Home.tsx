@@ -82,7 +82,7 @@ const Home = () => {
           special occasions at a fraction of the cost.
         </p>
         <div className="flex justify-center gap-6 mt-6 text-sm text-yellow-300">
-          <span>Premium Brands</span> • <span>Professional Cleaning</span> •{" "}
+          <span>Premium Brands</span> <span className="animate-pulse">•</span> <span>Professional Cleaning</span> <span className="animate-pulse">•</span>{" "}
           <span>Fast Delivery</span>
         </div>
       </section>

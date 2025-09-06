@@ -1,9 +1,28 @@
 import { Mail, Lock } from "lucide-react";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { useState, type ChangeEvent } from "react";
+import type { LoginDetailsType } from "../types/User";
 
 const Login = () => {
-    const navigation = useNavigate();
+    const navigate = useNavigate();
+    const [formData, setFormData] = useState<LoginDetailsType>({
+      email: "",
+      password: ""
+    })
+    const { login } = useAuth();
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>)=> {
+      setFormData({
+        ...formData,
+        [e.target.name]: [e.target.value]
+      })
+    }
+
+    const handleLogin = async ()=> {
+      login(formData);
+      navigate('/home');
+    }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4">
@@ -48,7 +67,7 @@ const Login = () => {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full bg-gray-900 text-white py-2 rounded-md shadow-sm hover:bg-gray-800 transition hover:cursor-pointer"
+            className="w-full bg-gray-900 text-white py-2 rounded-md shadow-sm hover:bg-gray-800 transition hover:cursor-pointer" onClick={handleLogin}
           >
             Login
           </button>

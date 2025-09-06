@@ -1,10 +1,34 @@
 import { User, Mail, Lock, UserCircle, Crown } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import type { RegisterDetailsType } from "../types/User";
+import { useAuth } from "../context/AuthContext";
 
 const Register = () => {
+    const [formData, setFormData] = useState<RegisterDetailsType>({
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+        role: "user"
+    });
     const [role, setRole] = useState("");
-    const navigation = useNavigate();
+    const navigate = useNavigate();
+
+    const { register } = useAuth();
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>)=> {
+        setFormData({
+            ...formData,
+            [e.target.name]: [e.target.value]
+        })
+    }
+
+    const handleRegister = async ()=> {
+        register(formData);
+        navigate('/home');
+    }
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4">
@@ -22,14 +46,26 @@ const Register = () => {
 
         {/* Form */}
         <form className="space-y-4">
-          {/* Full Name */}
+          {/* First Name */}
           <div className="relative">
             <User className="absolute left-3 top-3 text-gray-400 h-5 w-5" />
             <input
               type="text"
-              name="fullName"
-              placeholder="Enter your full name"
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 outline-none"
+              name="firstName"
+              value={formData.firstName}
+              placeholder="Enter your first name"
+              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 outline-none" onChange={handleChange}
+            />
+          </div>
+          {/* Last Name */}
+          <div className="relative">
+            <User className="absolute left-3 top-3 text-gray-400 h-5 w-5" />
+            <input
+              type="text"
+              name="lastName"
+              value={formData.lastName}
+              placeholder="Enter your last name"
+              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 outline-none" onChange={handleChange}
             />
           </div>
 
@@ -39,8 +75,9 @@ const Register = () => {
             <input
               type="email"
               name="email"
+              value={formData.email}
               placeholder="Enter your email"
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 outline-none"
+              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 outline-none" onChange={handleChange}
             />
           </div>
 
@@ -50,8 +87,9 @@ const Register = () => {
             <input
               type="password"
               name="password"
+              value={formData.password}
               placeholder="Create a password (min. 6 characters)"
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 outline-none"
+              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 outline-none" onChange={handleChange}
             />
           </div>
 
@@ -82,7 +120,7 @@ const Register = () => {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full bg-gray-900 text-white py-2 rounded-md shadow-sm hover:bg-gray-800 transition hover:cursor-pointer"
+            className="w-full bg-gray-900 text-white py-2 rounded-md shadow-sm hover:bg-gray-800 transition hover:cursor-pointer" onClick={handleRegister}
           >
             Create Account
           </button>
