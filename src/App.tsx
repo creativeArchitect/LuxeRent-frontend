@@ -1,31 +1,29 @@
 import { Routes, Route } from "react-router-dom"
-import Login from "./pages/Login"
-import Register from "./pages/Register"
 import Hero from "./pages/Hero"
 import Home from "./pages/Home"
-import Dashboard from "./pages/Dashboard"
-import UserRentals from "./pages/UserRentals"
-import Cloth from "./pages/Cloth"
 import ManageClothes from "./pages/ManageClothes"
-import { AuthProvider } from './context/authContext'
+import Cart from "./pages/Cart"
+import ManageRentals from "./pages/ManageRentals"
+import Dashboard from "./pages/Dashboard"
+import ClothDetails from "./pages/ClothDetails"
+import Register from "./pages/Register"
+import Login from "./pages/Login"
+
 
 function App() {
 
   return (
-    <div>
-      <AuthProvider>
-        <Routes>
-          <Route path="/" element={<Hero />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/my-rentals" element={<UserRentals />} />
-          <Route path="/cloth" element={<Cloth />} />
-          <Route path="/manage-rentals" element={<ManageClothes />} />
-        </Routes>
-      </AuthProvider>
-    </div>
+    <Routes>
+      <Route path="/" element={<Hero />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/home" element={<Home />} />
+      <Route path="/cloth" element={<ClothDetails />} />
+      <Route path="/cart" element={<Cart />} />
+      <Route path="/manage-clothes" element={<ManageClothes />} />
+      <Route path="/manage-rentals" element={<ManageRentals />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+    </Routes>
   )
 }
 

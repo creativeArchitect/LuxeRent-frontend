@@ -1,122 +1,63 @@
-import { motion } from "framer-motion";
-import { Shield, Truck, Star, CheckSquare, Sparkles } from "lucide-react";
+import { Sparkles, Shield, Truck, Star, ShoppingBag } from "lucide-react"
 import { useNavigate } from "react-router-dom";
 
-const Hero = () => {
+const Hero = ()=> {
   const navigate = useNavigate();
 
+
   return (
-    <div className="min-h-screen max-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-amber-900 flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden">
-      {/* Background overlay for texture */}
-      <div className="absolute inset-0 bg-black/20"></div>
+    <section className="relative min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#0f172a] via-[#0f172a] to-[#cc9815] text-white px-6">
+      
+      {/* Logo + Heading */}
+      <div className="flex flex-col items-center text-center max-w-2xl">
+        <div className="bg-yellow-500 text-black p-4 rounded-2xl mb-6">
+          <ShoppingBag size={32} />
+        </div>
+        <h1 className="flex items-center gap-2 text-4xl md:text-5xl font-bold">
+          <Sparkles className="text-yellow-400" size={36} />
+          LuxeRent
+        </h1>
+        <p className="mt-4 text-lg text-gray-200">
+          Rent premium designer clothing for special occasions. Look stunning without the commitment.
+        </p>
 
-      {/* Content container */}
-      <div className="relative z-10 max-w-6xl mx-auto text-center">
-        {/* Logo/Icon */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-8"
-        >
-          <div className="inline-flex items-center justify-center w-15 h-15 bg-amber-500 rounded-2xl">
-            <CheckSquare className="w-10 h-10 text-slate-900" />
-          </div>
-        </motion.div>
-
-        {/* Brand name with sparkle */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex items-center justify-center gap-4 mb-8"
-        >
-          <Sparkles className="w-8 h-8 text-amber-400" />
-          <h1 className="text-5xl md:text-7xl font-bold text-white">
-            LuxeRent
-          </h1>
-        </motion.div>
-
-        {/* Subtitle */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="text-lg md:text-xl text-slate-300 mb-12 max-w-4xl mx-auto leading-relaxed"
-        >
-          Rent premium designer clothing for special occasions. Look stunning
-          without the commitment.
-        </motion.p>
-
-        {/* CTA Buttons */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-20"
-        >
-          <button className="px-5 py-3 bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold rounded-lg transition-colors duration-200 text-lg hover:cursor-pointer" onClick={()=> navigate('/login')}>
-            Get Started
+        {/* CTA */}
+        <div className="flex gap-3 mt-6">
+          <button className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-6 py-3 rounded-md hover:cursor-pointer transition-all hover:shadow-yellow-500" onClick={()=> navigate('/register')}>
+            Go to Dashboard
           </button>
-          <button className="px-5 py-3 hover:bg-white/10 text-white font-semibold rounded-lg transition-colors duration-200 text-lg backdrop-blur-sm border border-white/20 hover:cursor-pointer">
-            Learn More
+          <button className="bg-[#0f172a] hover:bg-[#0f172a] font-semibold px-6 py-3 rounded-md hover:cursor-pointer transition-all border border-neutral-700 text-white" onClick={()=> navigate('/login')}>
+            Login
           </button>
-        </motion.div>
-
-        {/* Features Grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-          className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto"
-        >
-          {/* Premium Quality */}
-          <div className="text-center group">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-500/20 rounded-2xl mb-6 group-hover:bg-amber-500/30 transition-colors duration-300">
-              <Shield className="w-8 h-8 text-amber-400" />
-            </div>
-            <h3 className="text-xl font-semibold text-white mb-1">
-              Premium Quality
-            </h3>
-            <p className="text-slate-400 leading-relaxed">
-              Designer brands with full damage protection
-            </p>
-          </div>
-
-          {/* Fast Delivery */}
-          <div className="text-center group">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-500/20 rounded-2xl mb-6 group-hover:bg-amber-500/30 transition-colors duration-300">
-              <Truck className="w-8 h-8 text-amber-400" />
-            </div>
-            <h3 className="text-xl font-semibold text-white mb-1">
-              Fast Delivery
-            </h3>
-            <p className="text-slate-400 leading-relaxed">
-              Same day delivery in metro cities
-            </p>
-          </div>
-
-          {/* 5-Star Service */}
-          <div className="text-center group">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-500/20 rounded-2xl mb-6 group-hover:bg-amber-500/30 transition-colors duration-300">
-              <Star className="w-8 h-8 text-amber-400" />
-            </div>
-            <h3 className="text-xl font-semibold text-white mb-1">
-              5-Star Service
-            </h3>
-            <p className="text-slate-400 leading-relaxed">
-              Professional cleaning and 24/7 support
-            </p>
-          </div>
-        </motion.div>
+        </div>
       </div>
 
-      {/* Decorative elements */}
-      <div className="absolute top-10 left-10 w-2 h-2 bg-amber-400 rounded-full opacity-60 animate-pulse"></div>
-      <div className="absolute top-32 right-20 w-1 h-1 bg-amber-300 rounded-full opacity-40 animate-pulse delay-1000"></div>
-      <div className="absolute bottom-20 left-20 w-3 h-3 bg-amber-500 rounded-full opacity-30 animate-pulse delay-500"></div>
-    </div>
-  );
-};
+      {/* Features */}
+      <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
+        <div className="flex flex-col items-center">
+          <Shield size={32} className="text-yellow-400 mb-3" />
+          <h3 className="font-semibold text-lg">Premium Quality</h3>
+          <p className="text-gray-300 text-sm">
+            Designer brands with full damage protection
+          </p>
+        </div>
+        <div className="flex flex-col items-center">
+          <Truck size={32} className="text-yellow-400 mb-3" />
+          <h3 className="font-semibold text-lg">Fast Delivery</h3>
+          <p className="text-gray-300 text-sm">
+            Same day delivery in metro cities
+          </p>
+        </div>
+        <div className="flex flex-col items-center">
+          <Star size={32} className="text-yellow-400 mb-3" />
+          <h3 className="font-semibold text-lg">5-Star Service</h3>
+          <p className="text-gray-300 text-sm">
+            Professional cleaning and 24/7 support
+          </p>
+        </div>
+      </div>
+    </section>
+  )
+}
 
 export default Hero;

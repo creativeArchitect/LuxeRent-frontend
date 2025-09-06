@@ -1,124 +1,66 @@
-import { useState } from "react";
 import { Mail, Lock } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { useAuth } from "../context/authContext";
 
 const Login = () => {
-  const navigate = useNavigate();
-  const { login, token } = useAuth();
-
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-  const [loading, setLoading] = useState<boolean>(false);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-
-      login(formData, token);
-
-      console.log(localStorage.getItem("auth"));
-
-      navigate("/home");
-      toast.success("User registered successfully!");
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Error logging user.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    const navigation = useNavigate();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-gray-50 px-4">
-      <div className="bg-white w-full max-w-md rounded-2xl shadow-md border border-gray-100 p-8">
-        {/* Title */}
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
-          <p className="text-gray-500 text-sm mt-1">
-            Sign in to your account to continue
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4">
+      <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg">
+        {/* Logo + Title */}
+        <div className="flex flex-col items-center mb-6">
+          <div className="h-14 w-14 rounded-xl bg-yellow-500 flex items-center justify-center">
+            <span className="text-2xl font-bold text-white">👕</span>
+          </div>
+          <h1 className="text-2xl font-bold mt-2">LuxeRent</h1>
+          <p className="text-gray-500 text-sm">
+            Join the premium clothing rental platform
           </p>
         </div>
 
-        {/* Login Form */}
-        <div className="space-y-6">
-          {/* Email Field */}
-          <div>
-            <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-              <Mail className="w-4 h-4 mr-2" />
-              Email
-            </label>
+        {/* Form */}
+        <form className="space-y-4">
+
+          {/* Email */}
+          <div className="relative">
+            <Mail className="absolute left-3 top-3 text-gray-400 h-5 w-5" />
             <input
               type="email"
               name="email"
-              value={formData.email}
-              onChange={handleChange}
               placeholder="Enter your email"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent"
+              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 outline-none"
             />
           </div>
 
-          {/* Password Field */}
-          <div>
-            <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-              <Lock className="w-4 h-4 mr-2" />
-              Password
-            </label>
+          {/* Password */}
+          <div className="relative">
+            <Lock className="absolute left-3 top-3 text-gray-400 h-5 w-5" />
             <input
               type="password"
               name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Enter your password"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent"
+              placeholder="Create a password (min. 6 characters)"
+              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 outline-none"
             />
           </div>
 
-          {/* Sign In Button */}
+
+          {/* Submit */}
           <button
-            className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-3 px-4 rounded-lg transition-colors hover:cursor-pointer"
-            onClick={handleLogin}
+            type="submit"
+            className="w-full bg-gray-900 text-white py-2 rounded-md shadow-sm hover:bg-gray-800 transition hover:cursor-pointer"
           >
             Login
           </button>
+        </form>
 
-          {/* Sign Up Link */}
-          <p className="text-center text-sm text-gray-600">
-            Don&apos;t have an account?{" "}
-            <button
-              className="text-gray-900 font-medium hover:cursor-pointer hover:underline"
-              onClick={() => navigate("/register")}
-            >
-              Sign up
-            </button>
-          </p>
-        </div>
-
-        {/* Demo Credentials */}
-        <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700">
-          <p className="font-medium text-gray-900 mb-2">Demo Credentials:</p>
-          <p>
-            <span className="font-semibold">Admin:</span> admin@example.com
-          </p>
-          <p>
-            <span className="font-semibold">Customer:</span>{" "}
-            customer@example.com
-          </p>
-          <p>
-            <span className="font-semibold">Password:</span> Any password
-          </p>
-        </div>
+        {/* Footer */}
+        <p className="text-center text-sm text-gray-600 mt-4">
+          Don't have an account?{" "}
+          <a href="/register" className="text-yellow-600 hover:underline">
+            Register
+          </a>
+        </p>
       </div>
     </div>
   );
