@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useState, type ChangeEvent } from "react";
 import type { LoginDetailsType } from "../types/User";
+import { toast } from "sonner";
 
 const Login = () => {
     const navigate = useNavigate();
@@ -15,12 +16,17 @@ const Login = () => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>)=> {
       setFormData({
         ...formData,
-        [e.target.name]: [e.target.value]
+        [e.target.name]: e.target.value
       })
     }
 
-    const handleLogin = async ()=> {
+    const handleLogin = async (e: React.FormEvent)=> {
+      e.preventDefault();
       login(formData);
+      
+      if(!localStorage.getItem("token")){
+        toast.message("token is not present")
+      }
       navigate('/home');
     }
 
@@ -46,9 +52,11 @@ const Login = () => {
             <Mail className="absolute left-3 top-3 text-gray-400 h-5 w-5" />
             <input
               type="email"
+              value={formData.email}
               name="email"
               placeholder="Enter your email"
               className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 outline-none"
+              onChange={handleChange}
             />
           </div>
 
@@ -60,6 +68,7 @@ const Login = () => {
               name="password"
               placeholder="Create a password (min. 6 characters)"
               className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 outline-none"
+              onChange={handleChange}
             />
           </div>
 

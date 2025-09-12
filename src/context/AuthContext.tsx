@@ -1,5 +1,9 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
-import type { LoginDetailsType, RegisterDetailsType, UserType } from "../types/User";
+import type {
+  LoginDetailsType,
+  RegisterDetailsType,
+  UserType,
+} from "../types/User";
 import axios from "axios";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -8,36 +12,36 @@ type User = UserType | null;
 
 type AuthContextType = {
   user: User;
-  register: (userDetail: RegisterDetailsType)=> void;
-  login: (loginDetail: LoginDetailsType)=> void;
-  logout: ()=> void;
+  register: (userDetail: RegisterDetailsType) => void;
+  login: (loginDetail: LoginDetailsType) => void;
+  logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState<string>("");
   const navigate = useNavigate();
 
   const register = async (userDetail: RegisterDetailsType) => {
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_API_URL}/user/register`,
-        userDetail,
-        {
-          withCredentials: true,
-        }
+        userDetail
       );
 
+      setToken(res.data?.token);
       setUser(res.data?.user);
+      localStorage.setItem("token", res.data?.token);
       localStorage.setItem(
         "auth",
         JSON.stringify({ email: res.data?.user?.email })
       );
 
-      toast.message(res.data.message as string);
+      console.log("localStorage token", localStorage.getItem("token"));
 
-      navigate("/home");
+      toast.message(res.data.message as string);
     } catch (err) {
       toast.error("Error in user registration.");
     }
@@ -45,15 +49,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (loginDetail: LoginDetailsType) => {
     try {
+      // const token = localStorage.getItem("token") as string;
+      // if (!token) {
+      //   toast.message("Invalid token, please register");
+      // }
+
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_API_URL}/user/login`,
-        loginDetail,
-        {
-          withCredentials: true,
-        }
-      );
+        loginDetail);
 
+      console.log("res.data.sucecess",res.data.message);
+      
+      if (!res.data.success) {
+        toast.message(res.data.message);
+      }
+
+      console.log("res after login: ", res);
+
+      setToken(res.data?.token);
       setUser(res.data?.user);
+
+      localStorage.setItem("token", res.data?.token);
       localStorage.setItem(
         "auth",
         JSON.stringify({
@@ -62,8 +78,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       );
 
       toast.message(res.data.message as string);
-
-      navigate("/home");
     } catch (err) {
       toast.error("Error in the user login.");
     }
@@ -75,11 +89,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         `${import.meta.env.VITE_BASE_API_URL}/user/logout`,
         {},
         {
-          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
+      setToken("");
       setUser(null);
+
+      localStorage.removeItem("token");
       localStorage.removeItem("auth");
 
       toast.message(res.data.message as string);

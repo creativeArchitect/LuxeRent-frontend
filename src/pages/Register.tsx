@@ -1,34 +1,46 @@
 import { User, Mail, Lock, UserCircle, Crown } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import type { RegisterDetailsType } from "../types/User";
+import type { RegisterDetailsType, Role } from "../types/User";
 import { useAuth } from "../context/AuthContext";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
-    const [formData, setFormData] = useState<RegisterDetailsType>({
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: "",
-        role: "user"
+  const [formData, setFormData] = useState<RegisterDetailsType>({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    role: "user",
+  });
+  const [role, setRole] = useState<Role>("user");
+  const navigate = useNavigate();
+
+  const { register } = useAuth();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      role: role,
+      [e.target.name]: e.target.value,
     });
-    const [role, setRole] = useState("");
-    const navigate = useNavigate();
 
-    const { register } = useAuth();
+    console.log("form data:", formData);
+  };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>)=> {
-        setFormData({
-            ...formData,
-            [e.target.name]: [e.target.value]
-        })
+  const handleRegister = async (e: React.FormEvent) => {
+    try {
+      e.preventDefault();
+      console.log("form data:", formData);
+      register(formData);
+
+      if (localStorage.getItem("auth") && localStorage.getItem("token")) {
+        navigate("/home");
+      }
+    } catch (err) {
+      toast.error("Error in registering user.");
     }
-
-    const handleRegister = async ()=> {
-        register(formData);
-        navigate('/home');
-    }
-
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4">
@@ -54,7 +66,8 @@ const Register = () => {
               name="firstName"
               value={formData.firstName}
               placeholder="Enter your first name"
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 outline-none" onChange={handleChange}
+              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 outline-none"
+              onChange={handleChange}
             />
           </div>
           {/* Last Name */}
@@ -65,7 +78,8 @@ const Register = () => {
               name="lastName"
               value={formData.lastName}
               placeholder="Enter your last name"
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 outline-none" onChange={handleChange}
+              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 outline-none"
+              onChange={handleChange}
             />
           </div>
 
@@ -77,7 +91,8 @@ const Register = () => {
               name="email"
               value={formData.email}
               placeholder="Enter your email"
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 outline-none" onChange={handleChange}
+              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 outline-none"
+              onChange={handleChange}
             />
           </div>
 
@@ -89,7 +104,8 @@ const Register = () => {
               name="password"
               value={formData.password}
               placeholder="Create a password (min. 6 characters)"
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 outline-none" onChange={handleChange}
+              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 outline-none"
+              onChange={handleChange}
             />
           </div>
 
@@ -99,16 +115,24 @@ const Register = () => {
             <div className="flex gap-3">
               <button
                 type="button"
-                className={`flex-1 border border-gray-300 rounded-lg p-3 flex flex-col items-center cursor-pointer ${role === 'user' && 'border-yellow-500 bg-yellow-50'}`}
-               onClick={()=> setRole('user')}>
+                className={`flex-1 border border-gray-300 rounded-lg p-3 flex flex-col items-center cursor-pointer ${
+                  role === "user" && "border-yellow-500 bg-yellow-50"
+                }`}
+                onClick={() => setRole("user")}
+              >
                 <UserCircle className="h-6 w-6 mb-1" />
                 <span className="font-medium">User</span>
-                <span className="text-xs text-gray-500">Rent premium clothes</span>
+                <span className="text-xs text-gray-500">
+                  Rent premium clothes
+                </span>
               </button>
 
               <button
                 type="button"
-                className={`flex-1 border border-gray-300 rounded-lg p-3 flex flex-col items-center cursor-pointer ${role === 'admin' && 'border-yellow-500 bg-yellow-50'}`} onClick={()=> setRole('admin')}
+                className={`flex-1 border border-gray-300 rounded-lg p-3 flex flex-col items-center cursor-pointer ${
+                  role === "admin" && "border-yellow-500 bg-yellow-50"
+                }`}
+                onClick={() => setRole("admin")}
               >
                 <Crown className="h-6 w-6 mb-1" />
                 <span className="font-medium">Admin</span>
@@ -120,7 +144,8 @@ const Register = () => {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full bg-gray-900 text-white py-2 rounded-md shadow-sm hover:bg-gray-800 transition hover:cursor-pointer" onClick={handleRegister}
+            className="w-full bg-gray-900 text-white py-2 rounded-md shadow-sm hover:bg-gray-800 transition hover:cursor-pointer"
+            onClick={handleRegister}
           >
             Create Account
           </button>

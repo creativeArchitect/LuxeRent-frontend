@@ -8,6 +8,7 @@ export interface UserType {
     email: string
     password: string
     role: Role
+    avatarUrl: string
 }
 
 export interface RegisterDetailsType {
