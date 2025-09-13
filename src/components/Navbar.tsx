@@ -42,7 +42,7 @@ const Navbar = () => {
           My Rentals
         </Link>
         <Link
-          to="#"
+          to="/cart"
           className="px-3 py-3 hover:bg-neutral-100 rounded-md flex gap-1 items-center font-semibold"
         >
           <TiShoppingCart size={15} />
@@ -60,7 +60,7 @@ const Navbar = () => {
           </div>
         </div>
         <button
-          className="flex items-center gap-1 px-2 py-1.5 rounded-sm text-gray-600 hover:text-red-500 hover:bg-red-500/10"
+          className="flex items-center gap-1 px-2 py-1.5 rounded-md text-gray-600 hover:text-red-500 hover:bg-red-500/10 hover:cursor-pointer"
           onClick={handleLogout}
         >
           <LogOut className="h-5 w-5" /> Logout

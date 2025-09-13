@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import type { Cloth } from "../types/Cloth";
 import { IoSearchOutline } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const [items, setItems] = useState<Cloth[]>([]);
@@ -12,10 +13,14 @@ const Home = () => {
   const [page, setPage] = useState<number>(1);
   const limit = 8;
 
+  const navigate = useNavigate();
+
   const fetchItems = async () => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BASE_API_URL}/cloth/all?page=${page}&limit=${limit}`,
+        `${
+          import.meta.env.VITE_BASE_API_URL
+        }/cloth/all?page=${page}&limit=${limit}`,
         {
           headers: {
             Authorization: token,
@@ -28,9 +33,8 @@ const Home = () => {
       if (page === 1) {
         setItems(response.data.clothes);
       } else {
-        setItems(prevItems => [...prevItems, ...response.data.clothes]);
+        setItems((prevItems) => [...prevItems, ...response.data.clothes]);
       }
-
     } catch (error) {
       console.error("Error fetching clothes:", error);
     }
@@ -40,10 +44,6 @@ const Home = () => {
     fetchItems();
   }, [page]);
 
-  const handleRentItem = ()=> {
-
-  }
-
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -51,10 +51,13 @@ const Home = () => {
       {/* Hero */}
       <section className="bg-gradient-to-r from-gray-900 to-gray-700 text-white py-20 px-2 text-center">
         <h1 className="text-4xl font-bold mb-4 leading-tight">
-          ✨ <span className="text-yellow-500">Premium</span> Clothing Rental Experience
+          ✨ <span className="text-yellow-500">Premium</span> Clothing Rental
+          Experience
         </h1>
         <p className="text-gray-200 text-xl max-w-3xl mx-auto leading-relaxed">
-          Discover <span className="text-yellow-400">luxury fashion</span> from top designers. Rent premium clothing for special occasions at a fraction of the cost.
+          Discover <span className="text-yellow-400">luxury fashion</span> from
+          top designers. Rent premium clothing for special occasions at a
+          fraction of the cost.
         </p>
         <div className="flex items-center justify-center gap-8 mt-6 text-sm font-semibold text-yellow-400">
           <span className="animate-pulse">Premium Brands</span>
@@ -66,7 +69,7 @@ const Home = () => {
       {/* Search & Filters */}
       <div className="max-w-6xl mx-auto px-2 -mt-12">
         <div className="bg-white p-4 rounded-xl shadow flex items-center gap-4">
-          <div className="flex items-center flex-1 border border-gray-300 rounded-md px-3 py-2">
+          <div className="flex items-center flex-1 border border-gray-300 rounded-md px-3 py-2 bg-gray-50">
             <Search className="h-5 w-5 text-gray-400" />
             <input
               type="text"
@@ -92,9 +95,9 @@ const Home = () => {
             {items.map((item) => (
               <div
                 key={item?._id}
-                className="bg-white rounded-xl shadow hover:shadow-lg transition p-4 flex flex-col"
+                className="bg-white rounded-xl shadow hover:shadow-lg transition flex flex-col"
               >
-                <div className="relative rounded-lg overflow-hidden">
+                <div className="relative rounded-tl-lg rounded-tr-lg overflow-hidden">
                   <img
                     src={item.image}
                     alt={item.name}
@@ -111,43 +114,49 @@ const Home = () => {
                   </span>
                 </div>
 
-                <div className="mt-4 flex-grow">
+                <div className="mt-4 flex-grow px-3">
                   <p className="text-sm text-gray-500">{item.brand}</p>
                   <h3 className="font-semibold text-lg mt-1">{item.name}</h3>
                   <p className="font-bold mt-2 text-xl">
                     ₹{item.pricePerDay}{" "}
-                    <span className="text-sm text-gray-500 font-normal">/day</span>
+                    <span className="text-sm text-gray-500 font-normal">
+                      /day
+                    </span>
                   </p>
                 </div>
 
-                <button
-                  disabled={!item.available}
-                  className={`mt-4 w-full py-2 rounded-lg text-sm font-medium transition ${
-                    item.available
-                      ? "bg-gray-900 text-white hover:bg-gray-800 cursor-pointer"
-                      : "bg-gray-200 text-gray-500 cursor-not-allowed"
-                  }`}
-                  onClick={handleRentItem}
-                >
-                  {item.available ? "Rent Now" : "Not Available"}
-                </button>
-                
+                <div className="flex gap-3 px-3 py-3">
+                  <button
+                    disabled={!item.available}
+                    className={`mt-4 w-full py-2 rounded-lg text-sm font-medium transition ${
+                      item.available
+                        ? "bg-gray-900 text-white hover:bg-gray-800 hover:cursor-pointer"
+                        : "bg-gray-200 text-gray-500"
+                    }`}
+                    onClick={()=> {
+                      const id: string = item._id;
+                      item.available && navigate(`/cloth/${id}`)
+                    }}
+                  >
+                    {item.available ? "Rent Now" : "Not Available"}
+                  </button>
+                </div>
               </div>
             ))}
           </div>
 
-          <button 
-          className={`self-center px-6 py-3 rounded-md transition duration-150 ease-in-out ${
-            totalPages <= page
-              ? "bg-gray-300 text-gray-700 cursor-not-allowed"
-              : "bg-yellow-500 text-white hover:bg-yellow-400 cursor-pointer"
-          }` }
-          onClick={()=> {
-            setPage(curr=> curr+1)
-          }}
-          disabled={page >=  totalPages}
+          <button
+            className={`self-center px-6 py-3 rounded-md transition duration-150 ease-in-out ${
+              totalPages <= page
+                ? "bg-gray-300 text-gray-700 cursor-not-allowed"
+                : "bg-yellow-500 text-white hover:bg-yellow-400 cursor-pointer"
+            }`}
+            onClick={() => {
+              setPage((curr) => curr + 1);
+            }}
+            disabled={page >= totalPages}
           >
-            {page >= totalPages ? "No More Items" : "Load More" }
+            {page >= totalPages ? "No More Items" : "Load More"}
           </button>
         </div>
       </section>

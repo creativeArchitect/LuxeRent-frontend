@@ -1,7 +1,7 @@
 
 
 export interface Cloth{
-    id: string
+    _id: string
     name: string
     description: string
     brand: string

@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom"
+import { Routes, Route, useParams } from "react-router-dom"
 import Hero from "./pages/Hero"
 import Home from "./pages/Home"
 import ManageClothes from "./pages/ManageClothes"
@@ -11,14 +11,13 @@ import Login from "./pages/Login"
 
 
 function App() {
-
   return (
     <Routes>
       <Route path="/" element={<Hero />} />
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
       <Route path="/home" element={<Home />} />
-      <Route path="/cloth" element={<ClothDetails />} />
+      <Route path="/cloth/:id" element={<ClothDetails />} />
       <Route path="/cart" element={<Cart />} />
       <Route path="/manage-clothes" element={<ManageClothes />} />
       <Route path="/manage-rentals" element={<ManageRentals />} />
