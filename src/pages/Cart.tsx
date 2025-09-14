@@ -9,18 +9,29 @@ export default function Cart() {
   const navigate = useNavigate();
   const { cart, removeFromCart } = useCart();
 
-  const total = useMemo(()=> {
-    return cart.reduce((acc, item)=> acc + item.pricePerDay * item.quantity, 0);
-  }, [cart]);
+  console.log("cart: ", cart);
 
-  const getTotalRentalDays = (fromDate: string, toDate: string)=> {
+  const getTotalRentalDays = (fromDate: string, toDate: string) => {
     const from = new Date(fromDate);
     const to = new Date(toDate);
 
-    const diff = Math.ceil((from.getTime() - to.getTime()) / (1000 * 60 * 60 * 24));
+    const diff = Math.ceil(
+      (to.getTime() - from.getTime()) / (1000 * 60 * 60 * 24)
+    );
 
     return diff || 1;
-  }
+  };
+
+  const total = useMemo(() => {
+    return cart.reduce(
+      (acc, item) =>
+        acc +
+        item.pricePerDay *
+          getTotalRentalDays(item.fromDate, item.toDate) *
+          item.quantity,
+      0
+    );
+  }, [cart]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -52,7 +63,7 @@ export default function Cart() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
-            {cart.length > 0 ?
+            {cart.length > 0 ? (
               cart.map((c) => (
                 <div className="flex items-start bg-white rounded-xl shadow-sm p-4">
                   <img
@@ -66,28 +77,45 @@ export default function Cart() {
                     <div className="flex items-center text-sm text-gray-600 mt-2">
                       <Calendar className="w-4 h-4 mr-2" />
                       <span>
-                        From: <b>{(c.fromDate)}</b> To: <b>{c.toDate}</b>
+                        From: <b>{c.fromDate}</b> To: <b>{c.toDate}</b>
                       </span>
                     </div>
-                    <p className="text-sm text-gray-500 mt-1">
-                      {getTotalRentalDays(c.fromDate, c.toDate)} days
+                    <p className="text-sm text-gray-500 mt-1 ">
+                      Total Days -{" "}
+                      <span className="text-gray-600 font-semibold">
+                        {getTotalRentalDays(c.fromDate, c.toDate)} days
+                      </span>
+                    </p>
+                    <p className="text-sm bg-gray-500/10 border border-black/10 w-fit px-2 py-0.5 rounded-sm shadow-xs text-gray-600 mt-1 ">
+                      Quantity -{" "}
+                      <span className="text-gray-600 font-semibold">
+                        {c.quantity}
+                      </span>
                     </p>
                   </div>
-                  <div className="text-right" onClick={()=> {
-                    removeFromCart(c.clothId);
-                    toast.message(`${c.name} removed from cart`);
-                  }}>
-                    <button className="text-red-500 hover:text-red-700">
+                  <div
+                    className="text-right"
+                    onClick={() => {
+                      removeFromCart(c.clothId);
+                      toast.success(`${c.name} removed from cart`);
+                    }}
+                  >
+                    <button className="text-red-500 hover:text-red-700 px-2 py-2 rounded-lg hover:bg-orange-700/10 hover:cursor-pointer">
                       <Trash2 className="w-5 h-5" />
                     </button>
                     <p className="font-semibold mt-8">
-                      {c.quantity * c.pricePerDay}
+                      Total Price
+                      <span className="text-gray-600 font-semibold">
+                        {" "}
+                        - ₹{c.quantity * c.pricePerDay}
+                      </span>
                     </p>
                   </div>
                 </div>
-              )) : (
-                <p className="text-gray-500">Your cart is empty.</p>
-              )}
+              ))
+            ) : (
+              <p className="text-gray-500 px-80 py-30">Your cart is empty</p>
+            )}
           </div>
 
           {/* Order Summary */}
@@ -100,15 +128,20 @@ export default function Cart() {
             <div className="space-y-2 text-sm">
               {cart.length > 0 &&
                 cart.map((c) => (
-                  <div className="flex justify-between">
+                  <div className="flex justify-between px-3">
                     <span>{c.name}</span>
-                    <span>{c.quantity * c.pricePerDay}</span>
+                    <span>
+                      +{" "}
+                      {c.quantity *
+                        getTotalRentalDays(c.fromDate, c.toDate) *
+                        c.pricePerDay}
+                    </span>
                   </div>
                 ))}
-              <hr className="my-2" />
-              <div className="flex justify-between font-semibold text-lg">
-                <span>Total</span>
-                <span>{total}</span>
+              {/* <hr className="my-2" /> */}
+              <div className="flex justify-between font-semibold text-lg bg-gray-100 px-3 py-2 rounded-md shadow-xs">
+                <span className="text-gray-500">Total Rent</span>
+                <span>₹{total}</span>
               </div>
             </div>
 

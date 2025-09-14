@@ -3,11 +3,12 @@ import Hero from "./pages/Hero"
 import Home from "./pages/Home"
 import ManageClothes from "./pages/ManageClothes"
 import Cart from "./pages/Cart"
-import ManageRentals from "./pages/ManageRentals"
+import ManageRentals from "./pages/MyRentals"
 import Dashboard from "./pages/Dashboard"
 import ClothDetails from "./pages/ClothDetails"
 import Register from "./pages/Register"
 import Login from "./pages/Login"
+import MyRentals from "./pages/MyRentals"
 
 
 function App() {
@@ -20,7 +21,7 @@ function App() {
       <Route path="/cloth/:id" element={<ClothDetails />} />
       <Route path="/cart" element={<Cart />} />
       <Route path="/manage-clothes" element={<ManageClothes />} />
-      <Route path="/manage-rentals" element={<ManageRentals />} />
+      <Route path="/my-rentals" element={<MyRentals />} />
       <Route path="/dashboard" element={<Dashboard />} />
     </Routes>
   )

@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import type { CartItem } from "../types/CartItem";
+import { toast } from "sonner";
 
 type CartContextType = {
   cart: CartItem[]
@@ -13,16 +14,34 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
 
   const addToCart = (item: CartItem) => {
-    console.log("cartitem: ", item);
+    // const itemFromDate = new Date(item.fromDate);
+    // const itemToDate = new Date(item.toDate);
+
+    // const handleSameDates = (i: CartItem)=> {
+    //   const exitItemFromDate = new Date(i.fromDate);
+    //   const exitItemToDate = new Date(i.toDate);
+
+    //   const diffFromDates = exitItemFromDate.getTime() - itemFromDate.getTime();
+
+    //   const diffToDates = exitItemToDate.getTime() - itemToDate.getTime();
+
+    //   return diffFromDates 
+    // }
+
     setCart((prev: CartItem[]) => {
-      const isItemExists = prev.find((i) => i.clothId === item.clothId);
+      const isItemExists = prev.find((i) => (
+        i.clothId === item.clothId && (
+          (i.fromDate === item.fromDate || i.toDate === item.toDate))
+      ));
 
       if (isItemExists) {
+        toast.error("Cloth is already in the cart for selected dates");
         return prev.map((i) =>
           i.clothId === item.clothId ? { ...i, quantity: i.quantity + 1 } : i
         );
       }
 
+      toast.success("Cloth is added in the cart")
       return [...prev, { ...item, quantity:  item.quantity || 1 }];
     });
   };

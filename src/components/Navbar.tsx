@@ -4,10 +4,13 @@ import { toast } from "sonner";
 import { Link, useNavigate } from "react-router-dom";
 import { IoIosList } from "react-icons/io";
 import { TiShoppingCart } from "react-icons/ti";
+import { useCart } from "../context/CartContext";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+
+  const { cart } = useCart();
 
   const handleLogout = async () => {
     try {
@@ -43,10 +46,15 @@ const Navbar = () => {
         </Link>
         <Link
           to="/cart"
-          className="px-3 py-3 hover:bg-neutral-100 rounded-md flex gap-1 items-center font-semibold"
+          className="relative flex items-center gap-2 px-3 py-2 hover:bg-neutral-100 rounded-md font-semibold"
         >
-          <TiShoppingCart size={15} />
-          Cart
+          <TiShoppingCart size={24} className="text-gray-700" />
+          <span className="text-sm">Cart</span>
+          {cart.length > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
+              {cart.length}
+            </span>
+          )}
         </Link>
       </nav>
       <div className="flex items-center gap-4">

@@ -10,9 +10,10 @@ import {
 import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "sonner";
 import axios from "axios";
 import type { Cloth } from "../types/Cloth";
+import { useCart } from "../context/CartContext";
+import { toast } from "sonner";
 
 const featuredData = [
   {
@@ -44,6 +45,8 @@ const ClothDetail = () => {
   const [item, setItem] = useState<Cloth | null>(null);
   const token = localStorage.getItem("token");
 
+  const { addToCart } = useCart();
+
   const navigate = useNavigate();
 
   const fetchCloth = async () => {
@@ -66,34 +69,38 @@ const ClothDetail = () => {
 
   const totalDays = () => {
     if (!fromDate || !toDate) return 1;
-  
+
     const from = new Date(fromDate);
     const to = new Date(toDate);
     const msDiff = to.getTime() - from.getTime();
-  
+
     if (msDiff < 0) {
       toast.error("To Date must be after From Date");
       return 1;
     }
-  
+
     const dayDiff = Math.ceil(msDiff / (1000 * 60 * 60 * 24));
     return dayDiff <= 0 ? 1 : dayDiff;
   };
-  
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
 
       {/* Back to Browse */}
-      <div className="flex items-center gap-2 px-4 py-3 hover:bg-neutral-100 rounded-lg w-fit mt-6 ml-36 cursor-pointer" onClick={()=> navigate('/home')}>
+      <div
+        className="flex items-center gap-2 px-4 py-3 hover:bg-neutral-100 rounded-lg w-fit mt-6 ml-36 cursor-pointer"
+        onClick={() => navigate("/home")}
+      >
         <ArrowLeft className="w-4 h-4" />
         <span className="text-sm">Back to Browse</span>
       </div>
 
       <main className="px-10 md:px-20 lg:px-40 py-6 flex flex-col lg:flex-row gap-10">
         {!item ? (
-          <p className="text-center text-gray-500 w-full">No cloth data available</p>
+          <p className="text-center text-gray-500 w-full">
+            No cloth data available
+          </p>
         ) : (
           <>
             {/* Left - Image + Features */}
@@ -104,11 +111,13 @@ const ClothDetail = () => {
                   alt={item.name}
                   className="w-[500px] h-auto max-h-[700px] object-cover rounded-lg"
                 />
-                <span className={`absolute top-2 left-2 px-2 py-1 text-xs font-medium rounded-md ${
-                  item.available
-                    ? "bg-green-200 text-green-700"
-                    : "bg-red-100 text-red-700"
-                }`}>
+                <span
+                  className={`absolute top-2 left-2 px-2 py-1 text-xs font-medium rounded-md ${
+                    item.available
+                      ? "bg-green-200 text-green-700"
+                      : "bg-red-100 text-red-700"
+                  }`}
+                >
                   {item.available ? "Available" : "Rented"}
                 </span>
               </div>
@@ -167,12 +176,35 @@ const ClothDetail = () => {
                 </div>
 
                 <div className="flex gap-2">
-                <button className="w-full mt-4 flex items-center justify-center gap-2 bg-gray-200 text-black border border-black/20 py-3 rounded-lg hover:cursor-pointer hover:bg-gray-100">
-                  Add to cart
-                </button>
-                <button className="w-full mt-4 flex items-center justify-center gap-2 bg-gray-900 text-white py-3 rounded-lg hover:cursor-pointer hover:bg-gray-800">
-                  <span>Rent Now – ₹{totalDays() * item.pricePerDay}</span>
-                </button>
+                  <button
+                    className="w-full mt-4 flex items-center justify-center gap-2 bg-gray-200 text-black border border-black/20 py-3 rounded-lg hover:cursor-pointer hover:bg-gray-100"
+                    onClick={() => {
+                      if(fromDate && toDate){
+                        if(fromDate === toDate){
+                          return toast.error("From date and To date cannot be same");
+                        }
+                        addToCart({
+                          clothId: item._id,
+                          name: item.name,
+                          pricePerDay: item.pricePerDay,
+                          available: item.available,
+                          category: item.category,
+                          size: item.size,
+                          image: item.image,
+                          quantity: 1,
+                          fromDate: fromDate,
+                          toDate: toDate,
+                        });
+                      }else{
+                        toast.error("Please select the required dates");
+                      }
+                    }}
+                  >
+                    Add to cart
+                  </button>
+                  <button className="w-full mt-4 flex items-center justify-center gap-2 bg-gray-900 text-white py-3 rounded-lg hover:cursor-pointer hover:bg-gray-800">
+                    <span>Rent Now – ₹{totalDays() * item.pricePerDay}</span>
+                  </button>
                 </div>
               </div>
             </div>

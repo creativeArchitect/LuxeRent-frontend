@@ -10,7 +10,7 @@ export interface Cloth{
     pricePerDay: number
     // images: [String]
     image: string
-    available: Boolean
+    available: boolean
     currentRental?: string
 }
 
