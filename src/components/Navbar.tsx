@@ -31,14 +31,14 @@ const Navbar = () => {
       </div>
       <nav className="flex gap-6 text-sm font-medium text-gray-700">
         <Link
-          to="#"
+          to="/home"
           className="px-3 py-3 hover:bg-neutral-100 rounded-md flex gap-1 items-center font-semibold"
         >
           <LucideShoppingBag size={15} />
           Browse Clothes
         </Link>
         <Link
-          to="#"
+          to="/my-rentals"
           className="px-3 py-3 hover:bg-neutral-100 rounded-md flex gap-1 items-center font-semibold"
         >
           <IoIosList size={15} />

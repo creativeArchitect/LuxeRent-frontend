@@ -5,6 +5,7 @@ import axios from "axios";
 import type { Cloth } from "../types/Cloth";
 import { IoSearchOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const Home = () => {
   const [items, setItems] = useState<Cloth[]>([]);
@@ -27,7 +28,6 @@ const Home = () => {
           },
         }
       );
-      console.log(response);
       settotalPages(response.data.totalPages);
 
       if (page === 1) {
@@ -36,7 +36,7 @@ const Home = () => {
         setItems((prevItems) => [...prevItems, ...response.data.clothes]);
       }
     } catch (error) {
-      console.error("Error fetching clothes:", error);
+      toast.error("Error in fetching the clothes");
     }
   };
 

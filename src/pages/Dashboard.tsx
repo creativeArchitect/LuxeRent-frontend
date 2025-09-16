@@ -22,6 +22,9 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import Navbar from "../components/Navbar";
+import axios from "axios";
+import { useEffect, useMemo, useState } from "react";
+import type { OrderType } from "../types/Order";
 
 export default function Dashboard() {
   // Dummy chart data
@@ -49,6 +52,38 @@ export default function Dashboard() {
   ];
 
   const COLORS = ["#0f172a", "#64748b", "#1d4ed8", "#9333ea"];
+
+  // const [orders, setOrders] = useState<OrderType>([]);
+
+  // const totalRevenue = useMemo<number>(()=> {
+    
+  // }, []);
+  // const activeCustomers = useMemo<number>(()=> {
+
+  // }, []);
+  // const totalCustomers = useMemo<number>(()=> {
+
+  // }, []);
+  // const inventory = useMemo<number>(()=> {
+
+  // }, []);
+  const token = localStorage.getItem("token");
+  const fetchRentals = async ()=> {
+    const response = await axios.get(
+      `${
+          import.meta.env.VITE_BASE_API_URL
+        }/order/all`,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+    )
+  }
+
+  useEffect(()=> {
+    fetchRentals();
+  }, [])
 
   return (
     <div className="min-h-screen bg-gray-50">

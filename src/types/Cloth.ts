@@ -1,14 +1,14 @@
 
+type Size = "XS" | "S" | "M" | "L" | "XL" | "XXL"
 
 export interface Cloth{
-    _id: string
+    _id?: string
     name: string
     description: string
     brand: string
     category: string 
-    size: "XS" | "S" | "M" | "L" | "XL" | "XXL"
+    size: Size
     pricePerDay: number
-    // images: [String]
     image: string
     available: boolean
     currentRental?: string
