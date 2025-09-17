@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { X, Upload } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
@@ -6,35 +6,70 @@ import { Navigate } from "react-router-dom";
 import type { Cloth } from "../types/Cloth";
 
 export type ClothingItemModalProps = {
+  id?: string;
   heading: string;
   openModal: boolean;
   setOpenModal: (action: boolean) => void;
+  editFormData?: Cloth;
 };
 
 export default function ClothingItemModal({
+  id,
   heading,
   openModal,
   setOpenModal,
+  editFormData,
 }: ClothingItemModalProps) {
+  console.log("editFormData: ", editFormData);
   const [fileName, setFileName] = useState<string>("");
   const totalSize = ["XS", "S", "M", "L", "XL", "XXL"];
-  const [size, setSize] = useState<string>("");
-  const [formData, setFormData] = useState<Cloth>({
-    name: "",
-    description: "",
-    brand: "",
-    category: "",
-    size: "M",
-    pricePerDay: 0,
-    image: "",
-    available: true,
-  });
+  const [formData, setFormData] = useState<Cloth>(
+    editFormData || {
+      name: "",
+      description: "",
+      brand: "",
+      category: "",
+      size: "",
+      pricePerDay: 0,
+      image: "",
+      available: true,
+    }
+  );
 
   const token = localStorage.getItem("token");
   if (!token) {
     toast.error("Invalid token, please login or make account");
     return <Navigate to="/login" replace />;
   }
+
+  useEffect(() => {
+    if (editFormData) {
+      setFormData(editFormData);
+      
+    }
+  }, []);
+
+  useEffect(() => {
+    if (editFormData) {
+      setFormData(editFormData);
+      if (editFormData.image) {
+        setFileName(editFormData.image);
+      }
+    } else {
+      // Reset form for "Add New Cloth"
+      setFormData({
+        name: "",
+        description: "",
+        brand: "",
+        category: "",
+        size: "",
+        pricePerDay: 0,
+        image: "",
+        available: true,
+      });
+      setFileName("");
+    }
+  }, [editFormData]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -56,26 +91,43 @@ export default function ClothingItemModal({
     }));
   };
 
-  const handleSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((pre) => ({
-      ...pre,
-      size: e.target.value,
-    }));
-  };
+  // const handleSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setFormData((pre) => ({
+  //     ...pre,
+  //     size: e.target.value,
+  //   }));
+  // };
 
   const handleSubmitForm = async () => {
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/`,
-        formData,
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      );
+      if (heading === "Add New Cloth") {
+        const response = await axios.post(
+          `${import.meta.env.VITE_API_BASE_URL}/`,
+          formData,
+          {
+            headers: {
+              Authorization: token,
+            },
+          }
+        );
 
-      setOpenModal(false);
+        setOpenModal(false);
+        if (response.data.success) toast.success("Cloth is added successfully");
+      } else {
+        const response = await axios.put(
+          `${import.meta.env.VITE_API_BASE_URL}/${id}`,
+          formData,
+          {
+            headers: {
+              Authorization: token,
+            },
+          }
+        );
+
+        setOpenModal(false);
+        if (response.data.success)
+          toast.success("Cloth details updated successfully");
+      }
     } catch (err) {
       toast.error("Error in the Submitting Form");
     }
@@ -91,7 +143,6 @@ export default function ClothingItemModal({
           >
             {/* Header */}
             <div className="flex justify-between items-center mb-4">
-              {/* <h2 className="text-xl font-semibold">Add New Clothing Item</h2> */}
               <h2 className="text-xl font-semibold">{heading}</h2>
               <button
                 onClick={() => setOpenModal(false)}
@@ -146,6 +197,7 @@ export default function ClothingItemModal({
                     Category
                   </label>
                   <select
+                    name="category"
                     className="mt-1 w-full border border-black/20 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
                     value={formData.category}
                     onChange={(e) => handleChange(e)}
@@ -208,7 +260,6 @@ export default function ClothingItemModal({
                     id="fileUpload"
                     type="file"
                     name="image"
-                    value={formData.image}
                     accept="image/*"
                     onChange={handleFileChange}
                     className="hidden"
@@ -219,10 +270,20 @@ export default function ClothingItemModal({
                   >
                     {fileName ? "Change Image" : "Select an Image"}
                   </label>
-                  {fileName && (
-                    <p className="text-xs text-gray-500 mt-1">{fileName}</p>
-                  )}
                 </div>
+              </div>
+
+              {/* Image uploaded  */}
+              <div>
+                <label className="text-sm font-medium text-black/60">
+                  Image Uploaded *
+                </label>
+                <input
+                  name="image"
+                  value={fileName}
+                  disabled={true}
+                  className="mt-1 w-full border border-black/20 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+                />
               </div>
 
               {/* Size and Availability */}
@@ -235,7 +296,7 @@ export default function ClothingItemModal({
                   <select
                     name="size"
                     value={formData.size}
-                    onChange={handleChange}
+                    onChange={(e)=> handleChange(e)}
                     className="mt-1 w-full border border-black/20 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
                   >
                     {totalSize.map((s) => (
@@ -255,8 +316,13 @@ export default function ClothingItemModal({
                     id="available"
                     type="checkbox"
                     name="available"
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        available: e.target.checked,
+                      }))
+                    }
                     checked={formData.available}
-                    onChange={(e)=> handleChange(e)}
                     className="w-4 h-4 border-black/20 rounded"
                   />
                 </div>
@@ -272,7 +338,9 @@ export default function ClothingItemModal({
                 </button>
                 <button
                   type="button"
-                  onClick={() => setOpenModal(false)}
+                  onClick={() => {
+                    setOpenModal(false)
+                  }}
                   className="border border-gray-300 px-6 py-2 rounded-md hover:bg-gray-100 hover:cursor-pointer"
                 >
                   Cancel

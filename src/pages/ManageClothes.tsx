@@ -13,11 +13,22 @@ export default function ManageClothes() {
 
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [modalHeading, setModalHeading] = useState<string>("");
+  const [editClothId, setEditClothId] = useState<string>("");
+  const [editFormData, setEditFormData] = useState<Cloth>({
+    name: "",
+    description: "",
+    brand: "",
+    category: "", 
+    size: "",
+    pricePerDay: 0,
+    image: "",
+    available: true,
+  });
 
   const token = localStorage.getItem("token");
-  
+
   const fetchAllClothes = async () => {
-    try{
+    try {
       const response = await axios.get(
         `${import.meta.env.VITE_BASE_API_URL}/cloth/all`,
         {
@@ -26,73 +37,51 @@ export default function ManageClothes() {
           },
         }
       );
-  
       setClothesInventory(response.data.clothes);
       setClothes(response.data.clothes);
-    }catch(err){
+    } catch (err) {
       toast.error("Error in fetching the clothes");
     }
   };
 
-  const handleDeleteCloth = async (id: string)=> {
-    try{
+  const handleDeleteCloth = async (id: string) => {
+    try {
       const response = await axios.post(
-        `${
-          import.meta.env.VITE_BASE_API_URL
-        }/cloth/${id}`,
+        `${import.meta.env.VITE_BASE_API_URL}/cloth/${id}`,
         {
           headers: {
             Authorization: token,
           },
         }
-      )
-      if(response.data.success){
+      );
+      if (response.data.success) {
         toast.success(response.data.message as string);
       }
-    }catch(err){  
+    } catch (err) {
       toast.error("Error in deletion of cloth");
     }
-  }
+  };
 
-  // const handleEditCloth = async (id: string)=>  {
-  //   try{
-  //     const response = await axios.put(
-  //       `${
-  //         import.meta.env.VITE_BASE_API_URL
-  //       }/cloth/${id}`,
-  //       {
-  //         updatedClothData
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: token,
-  //         },
-  //       }
-  //     )
-  //     if(response.data.success){
-  //       toast.success(response.data.message as string);
-  //     }
-  //   }catch(err){  
-  //     toast.error("Error in deletion of cloth");
-  //   }
-  // }
-
-  const availableClothes = useMemo<number>(()=>{
+  const availableClothes = useMemo<number>(() => {
     let count = 0;
-    clothes.map(c=> {c.available && ++count})
+    clothes.map((c) => {
+      c.available && ++count;
+    });
     return count;
   }, [clothes]);
-  const rentedClothes = useMemo<number>(()=>{
+  const rentedClothes = useMemo<number>(() => {
     let count = 0;
-    clothes.map(c=> {!c.available && ++count})
+    clothes.map((c) => {
+      !c.available && ++count;
+    });
     return count;
   }, [clothes]);
 
   useEffect(() => {
     fetchAllClothes();
-    const interval = setInterval(fetchAllClothes, 5000);
+    // const interval = setInterval(fetchAllClothes, 5000);
 
-    return ()=> clearInterval(interval);
+    // return ()=> clearInterval(interval);
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -125,11 +114,13 @@ export default function ManageClothes() {
               Add, edit, and manage your clothing inventory
             </p>
           </div>
-          <button className="bg-black text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-gray-800"
-          onClick={()=> {
-            setOpenModal(true)
-            setModalHeading("New Cloth Form")
-            }}>
+          <button
+            className="bg-black text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-gray-800"
+            onClick={() => {
+              setOpenModal(true);
+              setModalHeading("New New Cloth");
+            }}
+          >
             <Plus className="w-4 h-4" />
             <span>Add New Cloth</span>
           </button>
@@ -238,20 +229,24 @@ export default function ManageClothes() {
 
                     {/* Actions */}
                     <div className="flex items-center space-x-3 w-1/12 justify-end">
-
-                      <button className="text-gray-600 hover:text-black"
-                      onClick={()=> {
-                        setOpenModal(true);
-                        setModalHeading("Edit Cloth Details")
-                      }}>
+                      <button
+                        className="text-gray-600 hover:text-black"
+                        onClick={() => {
+                          setOpenModal(true);
+                          setModalHeading("Edit Cloth Details");
+                          setEditClothId(item._id as string);
+                          setEditFormData(item);
+                        }}
+                      >
                         <Edit className="w-4 h-4" />
                       </button>
 
-                      <button className="text-gray-600 hover:text-red-600"
-                      onClick={()=> handleDeleteCloth(item._id as string)}>
+                      <button
+                        className="text-gray-600 hover:text-red-600"
+                        onClick={() => handleDeleteCloth(item._id as string)}
+                      >
                         <Trash2 className="w-4 h-4" />
                       </button>
-
                     </div>
                   </div>
                 ))}
@@ -260,7 +255,13 @@ export default function ManageClothes() {
         </div>
       </div>
 
-      <ClothingItemModal heading={modalHeading} openModal={openModal} setOpenModal={setOpenModal} />
+      <ClothingItemModal
+        id={editClothId}
+        editFormData={editFormData}
+        heading={modalHeading}
+        openModal={openModal}
+        setOpenModal={setOpenModal}
+      />
     </div>
   );
 }

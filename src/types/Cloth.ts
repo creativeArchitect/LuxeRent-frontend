@@ -1,7 +1,7 @@
 
-type Size = "XS" | "S" | "M" | "L" | "XL" | "XXL"
+type Size = "XS" | "S" | "M" | "L" | "XL" | "XXL" | ""
 
-export interface Cloth{
+export type Cloth = {
     _id?: string
     name: string
     description: string
