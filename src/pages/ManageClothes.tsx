@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import type { Cloth } from "../types/Cloth";
 import axios from "axios";
 import { toast } from "sonner";
-import ClothingItemModal from "../components/clothingItemModal";
+import ClothingItemModal from "../components/ClothingItemModal";
 
 export default function ManageClothes() {
   const [clothesInventory, setClothesInventory] = useState<Cloth[]>([]);
@@ -198,7 +198,7 @@ export default function ManageClothes() {
 
                     {/* Price */}
                     <div className="w-1/12 font-medium text-gray-500">
-                      {item.pricePerDay}
+                    ₹{item.pricePerDay}/day
                     </div>
 
                     {/* Rating */}

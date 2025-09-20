@@ -2,12 +2,16 @@ import { ArrowLeft, ShoppingCart, Trash2, Calendar } from "lucide-react";
 import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { FiCreditCard } from "react-icons/fi";
+import Checkout from "../components/CheckOut";
 
 export default function Cart() {
   const navigate = useNavigate();
   const { cart, removeFromCart } = useCart();
+
+  const [showModal, setShowModal] = useState<boolean>(false);
 
   console.log("cart: ", cart);
 
@@ -145,9 +149,12 @@ export default function Cart() {
               </div>
             </div>
 
-            <button className="w-full mt-6 flex items-center justify-center space-x-2 bg-gray-900 text-white py-3 rounded-md hover:bg-gray-800 hover:cursor-pointer">
-              <ShoppingCart className="w-5 h-5" />
-              <span>Rent All Items</span>
+            <button
+              className="w-full mt-6 flex items-center justify-center space-x-2 bg-gray-900 text-white py-3 rounded-md hover:bg-gray-800 hover:cursor-pointer"
+              onClick={() => setShowModal(true)}
+            >
+              <FiCreditCard size={18} />
+              <span className="font-semibold">Proceed to Checkout</span>
             </button>
 
             <p className="text-xs text-gray-500 mt-4">
@@ -157,6 +164,11 @@ export default function Cart() {
           </div>
         </div>
       </main>
+
+      <Checkout
+        showModal={showModal}
+        setShowModal={() => setShowModal(false)}
+      />
     </div>
   );
 }

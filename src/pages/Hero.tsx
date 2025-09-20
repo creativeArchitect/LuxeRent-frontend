@@ -26,9 +26,9 @@ const Hero = ()=> {
           <button className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-6 py-3 rounded-md hover:cursor-pointer transition-all hover:shadow-yellow-500" onClick={()=> navigate('/register')}>
             Go to Dashboard
           </button>
-          <button className="bg-[#0f172a] hover:bg-[#0f172a] font-semibold px-6 py-3 rounded-md hover:cursor-pointer transition-all border border-neutral-700 text-white" onClick={()=> navigate('/login')}>
+          {/* <button className="bg-[#0f172a] hover:bg-[#0f172a] font-semibold px-6 py-3 rounded-md hover:cursor-pointer transition-all border border-neutral-700 text-white" onClick={()=> navigate('/login')}>
             Login
-          </button>
+          </button> */}
         </div>
       </div>
 

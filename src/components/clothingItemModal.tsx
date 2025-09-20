@@ -138,7 +138,7 @@ export default function ClothingItemModal({
       <>
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40">
           <div
-            className="bg-white rounded-xl w-full max-w-lg p-6 relative"
+            className="bg-white rounded-xl w-full max-w-lg px-5 py-3 relative"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -154,7 +154,7 @@ export default function ClothingItemModal({
 
             {/* Form */}
             <form
-              className="space-y-4"
+              className="space-y-3"
               onSubmit={(e) => {
                 e.preventDefault();
                 handleSubmitForm();

@@ -184,7 +184,7 @@ const ClothDetail = () => {
                           return toast.error("From date and To date cannot be same");
                         }
                         addToCart({
-                          clothId: item._id,
+                          clothId: item._id as string,
                           name: item.name,
                           pricePerDay: item.pricePerDay,
                           available: item.available,

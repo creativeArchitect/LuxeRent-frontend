@@ -79,6 +79,7 @@ export default function Dashboard() {
           },
         }
     )
+    console.log("response: ", response);
   }
 
   useEffect(()=> {
