@@ -3,7 +3,6 @@ import { useState } from "react";
 import type { RegisterDetailsType, Role } from "../types/User";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [formData, setFormData] = useState<RegisterDetailsType>({
@@ -13,30 +12,22 @@ const Register = () => {
     password: "",
     role: "user",
   });
-  const [role, setRole] = useState<Role>("user");
-  const navigate = useNavigate();
 
   const { register } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
-      role: role,
       [e.target.name]: e.target.value,
     });
-
-    console.log("form data:", formData);
   };
+
+  
 
   const handleRegister = async (e: React.FormEvent) => {
     try {
       e.preventDefault();
-      console.log("form data:", formData);
       register(formData);
-
-      if (localStorage.getItem("auth") && localStorage.getItem("token")) {
-        navigate("/home");
-      }
     } catch (err) {
       toast.error("Error in registering user.");
     }
@@ -116,9 +107,9 @@ const Register = () => {
               <button
                 type="button"
                 className={`flex-1 border border-gray-300 rounded-lg p-3 flex flex-col items-center cursor-pointer ${
-                  role === "user" && "border-yellow-500 bg-yellow-50"
+                  formData.role === "user" && "border-yellow-500 bg-yellow-50"
                 }`}
-                onClick={() => setRole("user")}
+                onClick={() => setFormData(prev => ({ ...prev, role: "user" }))}
               >
                 <UserCircle className="h-6 w-6 mb-1" />
                 <span className="font-medium">User</span>
@@ -130,9 +121,9 @@ const Register = () => {
               <button
                 type="button"
                 className={`flex-1 border border-gray-300 rounded-lg p-3 flex flex-col items-center cursor-pointer ${
-                  role === "admin" && "border-yellow-500 bg-yellow-50"
+                  formData.role === "admin" && "border-yellow-500 bg-yellow-50"
                 }`}
-                onClick={() => setRole("admin")}
+                onClick={() => setFormData(prev => ({ ...prev, role: "admin" }))}
               >
                 <Crown className="h-6 w-6 mb-1" />
                 <span className="font-medium">Admin</span>

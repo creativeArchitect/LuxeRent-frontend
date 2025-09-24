@@ -36,16 +36,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem("token", res.data?.token);
       localStorage.setItem(
         "auth",
-        JSON.stringify({ email: res.data?.user?.email })
+        JSON.stringify({ id: res.data?.id, email: res.data?.user?.email })
       );
 
-      console.log("localStorage token", localStorage.getItem("token"));
-
-      toast.message(res.data.message as string);
-    } catch (err) {
-      toast.error("Error in user registration.");
-    }
-  };
+      if(res.data.success){
+        toast.message(res.data.message as string);
+        navigate('/home');
+      }
+    } catch (err: any) {
+      if (axios.isAxiosError(err) && err.response) {
+        toast.error(err.response.data?.message || "Registration failed");
+      } else {
+        // Network error or something else
+        toast.error("Error in user registration.");
+      }
+    }}
 
   const login = async (loginDetail: LoginDetailsType) => {
     try {
@@ -58,14 +63,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         `${import.meta.env.VITE_BASE_API_URL}/user/login`,
         loginDetail);
 
-      console.log("res.data.sucecess",res.data.message);
-      
-      if (!res.data.success) {
-        toast.message(res.data.message);
-      }
-
-      console.log("res after login: ", res);
-
       setToken(res.data?.token);
       setUser(res.data?.user);
 
@@ -73,13 +70,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem(
         "auth",
         JSON.stringify({
+          id: res.data?.id, 
           email: res.data?.user?.email,
         })
       );
 
-      toast.message(res.data.message as string);
+      if(res.data.success){
+        toast.message(res.data.message as string);
+        navigate('/home');
+      }
     } catch (err) {
-      toast.error("Error in the user login.");
+      if (axios.isAxiosError(err) && err.response) {
+        toast.error(err.response.data?.message || "login failed");
+      } else {
+        // Network error or something else
+        toast.error("Error in user login.");
+      }
     }
   };
 

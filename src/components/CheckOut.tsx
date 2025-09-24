@@ -3,7 +3,6 @@ import { useMemo, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { useCart } from "../context/CartContext";
-import RazorpayModal from "./RazorpayModal";
 
 type CheckoutFormType = {
   firstName: string;
@@ -20,6 +19,16 @@ type CheckoutProps = {
   setShowModal: (val: boolean) => void;
 };
 
+export const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
 const Checkout = ({ showModal, setShowModal }: CheckoutProps) => {
   const [currStep, setCurrStep] = useState<number>(1);
   const [formData, setFormData] = useState<CheckoutFormType>({
@@ -32,9 +41,9 @@ const Checkout = ({ showModal, setShowModal }: CheckoutProps) => {
     pincode: "",
   });
   const { cart } = useCart();
-  const [openRazorpay, setOpenRazorpay] = useState<boolean>(false);
 
   const token = localStorage.getItem("token") as string;
+  const currUser = JSON.parse(localStorage.getItem("auth") as string) ;
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -47,6 +56,11 @@ const Checkout = ({ showModal, setShowModal }: CheckoutProps) => {
   };
 
   const handleSubmit = async () => {
+    const orderData = {
+      ...formData,
+      user: currUser.id,
+      // cloth: 
+    }
     const response = await axios.post(
       `${import.meta.env.BASE_API_URL}/order`,
       formData,
@@ -85,6 +99,70 @@ const Checkout = ({ showModal, setShowModal }: CheckoutProps) => {
   }, [cart]);
 
   if (!showModal) return null;
+
+  const handleRazorpay = async () => {
+    const res = await loadRazorpayScript();
+    if (!res) {
+      toast.error("Razorpay SDK failed to load.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/payments/create-order`,
+        { amount: total },
+        {
+          headers: { Authorization: token },
+        }
+      );
+
+      const options = {
+        key: import.meta.env.VITE_PUBLIC_RAZORPAY_KEY_ID,
+        amount: response.data.amount,
+        currency: "INR",
+        name: "RentLuxe",
+        description: "Online Payment",
+        order_id: response.data.orderId,
+        handler: async (res: any) => {
+          const paymentResult = await axios.post(
+            `${import.meta.env.VITE_API_BASE_URL}/payments/verify-order`,
+            {
+              ...res,
+              orderId: response.data.orderId,
+              formData,
+              cart,
+            },
+            {
+              headers: { Authorization: token },
+            }
+          );
+
+          if (paymentResult.data.success) {
+            toast.success("Payment successful and order confirmed!");
+          } else {
+            toast.error("Payment succeeded but order failed to confirm.");
+          }
+        },
+        prefill: {
+          name: `${formData.firstName} ${formData.lastName}`,
+          email: localStorage.getItem("email"),
+          contact: formData.phone,
+        },
+        notes: {
+          address: formData.address,
+        },
+        theme: {
+          color: "#0d9488",
+        },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
+    } catch (err) {
+      toast.error("Something went wrong while initiating payment.");
+      console.error(err);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center px-4 sm:px-6 overflow-y-auto">
@@ -268,15 +346,13 @@ const Checkout = ({ showModal, setShowModal }: CheckoutProps) => {
             ) : (
               <button
                 className="bg-green-500 text-white px-6 py-2 rounded-md text-sm hover:bg-green-600 hover:cursor-pointer"
-                onClick={()=> setOpenRazorpay(true)}
+                onClick={handleRazorpay}
               >
                 Confirm Order
               </button>
             )}
           </div>
         </main>
-
-        <RazorpayModal showModal={openRazorpay} setShowModal={()=> setOpenRazorpay(false)} totalPrice={total} formData={formData} cart={cart} />
       </div>
     </div>
   );

@@ -23,11 +23,6 @@ const Login = () => {
     const handleLogin = async (e: React.FormEvent)=> {
       e.preventDefault();
       login(formData);
-      
-      if(!localStorage.getItem("token")){
-        toast.message("token is not present")
-      }
-      navigate('/home');
     }
 
   return (
