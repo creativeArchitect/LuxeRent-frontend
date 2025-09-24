@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type {
   LoginDetailsType,
   RegisterDetailsType,
@@ -7,22 +7,46 @@ import type {
 import axios from "axios";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 type User = UserType | null;
 
 type AuthContextType = {
   user: User;
+  isAuthenticated: boolean;
   register: (userDetail: RegisterDetailsType) => void;
   login: (loginDetail: LoginDetailsType) => void;
   logout: () => void;
 };
+
+type JwtDecode = { exp: number };
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState<string>("");
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const savedToken = localStorage.getItem("token");
+    if (savedToken) {
+      const decoded = jwtDecode<JwtDecode>(savedToken);
+      const isExpired = decoded.exp*1000 < Date.now();
+
+      if(!isExpired){
+        setToken(savedToken);
+        setIsAuthenticated(true);
+        const savedAuth = localStorage.getItem("auth");
+        if (savedAuth) setUser(JSON.parse(savedAuth));
+      } else {
+        localStorage.removeItem("token");
+        localStorage.removeItem("auth");
+        setIsAuthenticated(false);
+      }
+    }
+  }, []);
 
   const register = async (userDetail: RegisterDetailsType) => {
     try {
@@ -36,32 +60,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem("token", res.data?.token);
       localStorage.setItem(
         "auth",
-        JSON.stringify({ id: res.data?.id, email: res.data?.user?.email })
+        JSON.stringify({ id: res.data?.id, email: res.data?.user?.email, firstName: res.data?.firstName, lastName: res.data?.lastName })
       );
 
-      if(res.data.success){
+      if (res.data.success) {
         toast.message(res.data.message as string);
-        navigate('/home');
+        setIsAuthenticated(true);
+        navigate("/home");
       }
     } catch (err: any) {
       if (axios.isAxiosError(err) && err.response) {
         toast.error(err.response.data?.message || "Registration failed");
       } else {
-        // Network error or something else
         toast.error("Error in user registration.");
       }
-    }}
+    }
+  };
 
   const login = async (loginDetail: LoginDetailsType) => {
     try {
-      // const token = localStorage.getItem("token") as string;
-      // if (!token) {
-      //   toast.message("Invalid token, please register");
-      // }
-
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_API_URL}/user/login`,
-        loginDetail);
+        loginDetail
+      );
 
       setToken(res.data?.token);
       setUser(res.data?.user);
@@ -70,20 +91,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem(
         "auth",
         JSON.stringify({
-          id: res.data?.id, 
-          email: res.data?.user?.email,
+          id: res.data?.user?.id, email: res.data?.user?.email, firstName: res.data?.user?.firstName, lastName: res.data?.user?.lastName
         })
       );
 
-      if(res.data.success){
+      if (res.data.success) {
         toast.message(res.data.message as string);
-        navigate('/home');
+        setIsAuthenticated(true);
+        navigate("/home");
       }
     } catch (err) {
       if (axios.isAxiosError(err) && err.response) {
         toast.error(err.response.data?.message || "login failed");
       } else {
-        // Network error or something else
         toast.error("Error in user login.");
       }
     }
@@ -107,16 +127,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.removeItem("token");
       localStorage.removeItem("auth");
 
-      toast.message(res.data.message as string);
-
-      navigate("/");
+      if (res.data.success){
+        toast.message(res.data.message as string);
+      }
+      setIsAuthenticated(false);
+      navigate('/');
     } catch (err) {
-      toast.error("Error in the user logout.");
+      if (axios.isAxiosError(err) && err.response) {
+        toast.error(err.response.data?.message || "logout failed");
+      } else {
+        toast.error("Error in user logoug.");
+      }
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, register, login, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, register, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

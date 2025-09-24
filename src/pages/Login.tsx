@@ -1,12 +1,9 @@
 import { Mail, Lock } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useState, type ChangeEvent } from "react";
+import { useState } from "react";
 import type { LoginDetailsType } from "../types/User";
-import { toast } from "sonner";
 
 const Login = () => {
-    const navigate = useNavigate();
     const [formData, setFormData] = useState<LoginDetailsType>({
       email: "",
       password: ""

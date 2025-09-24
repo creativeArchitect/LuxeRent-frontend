@@ -9,6 +9,7 @@ import { useCart } from "../context/CartContext";
 const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  console.log("user", user);
 
   const { cart } = useCart();
 
