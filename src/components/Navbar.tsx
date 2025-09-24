@@ -59,8 +59,8 @@ const Navbar = () => {
         </Link>
       </nav>
       <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2 bg-neutral-100 px-3 py-1 rounded-full">
-          <img src={user?.avatarUrl} />
+        <div className="flex items-center gap-2 bg-neutral-100 px-3 py-1 rounded-md">
+          <img src={user?.avatarUrl} alt="userAvatar" />
           <div className="text-sm">
             <p className="font-medium">
               {user?.firstName + " " + user?.lastName}

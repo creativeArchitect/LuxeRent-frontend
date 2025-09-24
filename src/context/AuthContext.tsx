@@ -60,7 +60,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem("token", res.data?.token);
       localStorage.setItem(
         "auth",
-        JSON.stringify({ id: res.data?.id, email: res.data?.user?.email, firstName: res.data?.firstName, lastName: res.data?.lastName })
+        JSON.stringify({ id: res.data?.user?.id, email: res.data?.user?.email, firstName: res.data?.user?.firstName, lastName: res.data?.user?.lastName, role:res.data?.user?.role  })
       );
 
       if (res.data.success) {
@@ -91,7 +91,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem(
         "auth",
         JSON.stringify({
-          id: res.data?.user?.id, email: res.data?.user?.email, firstName: res.data?.user?.firstName, lastName: res.data?.user?.lastName
+          id: res.data?.user?.id, email: res.data?.user?.email, firstName: res.data?.user?.firstName, lastName: res.data?.user?.lastName, role:res.data?.user?.role 
         })
       );
 

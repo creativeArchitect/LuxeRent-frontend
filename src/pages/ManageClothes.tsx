@@ -9,7 +9,6 @@ import ClothingItemModal from "../components/ClothingItemModal";
 export default function ManageClothes() {
   const [clothesInventory, setClothesInventory] = useState<Cloth[]>([]);
   const [clothes, setClothes] = useState<Cloth[]>([]);
-  const [searchInput, setSearchInput] = useState<string>("");
 
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [modalHeading, setModalHeading] = useState<string>("");
@@ -86,7 +85,6 @@ export default function ManageClothes() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value.toLowerCase();
-    setSearchInput(input);
 
     if (input.trim() === "") {
       setClothesInventory(clothes);

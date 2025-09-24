@@ -1,6 +1,6 @@
 import { Search } from "lucide-react";
 import Navbar from "../components/Navbar";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import axios from "axios";
 import type { Cloth } from "../types/Cloth";
 import { IoSearchOutline } from "react-icons/io5";
@@ -9,6 +9,7 @@ import { toast } from "sonner";
 
 const Home = () => {
   const [items, setItems] = useState<Cloth[]>([]);
+  const [initialItems, setInitialItems] = useState<Cloth[]>([]);
   const token = `Bearer ${localStorage.getItem("token")}`;
   const [totalPages, settotalPages] = useState<number>(1);
   const [page, setPage] = useState<number>(1);
@@ -32,13 +33,29 @@ const Home = () => {
 
       if (page === 1) {
         setItems(response.data.clothes);
+        setInitialItems(response.data.clothes);
       } else {
         setItems((prevItems) => [...prevItems, ...response.data.clothes]);
+        setInitialItems((prevItems) => [...prevItems, ...response.data.clothes]);
       }
     } catch (error) {
       toast.error("Error in fetching the clothes");
     }
   };
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>)=> {
+    const input = e.target.value.toLowerCase();
+    if(input.trim() !== ""){
+      const filter = items.filter(item=> (
+        item.name.toLowerCase().includes(input) ||
+        item.brand.toLowerCase().includes(input) ||
+        item.category.toLowerCase().includes(input)
+      ))
+      setItems(filter);
+    }else{
+      setItems(initialItems);
+    }
+  }
 
   useEffect(() => {
     if(!localStorage.getItem("token")){
@@ -78,11 +95,9 @@ const Home = () => {
               type="text"
               placeholder="Search by name, brand, or description..."
               className="w-full px-3 py-1 outline-none"
+              onChange={handleSearch}
             />
           </div>
-          <button className="flex items-center gap-2 rounded-md px-4 py-2 bg-yellow-500 text-white hover:bg-yellow-400 transition duration-150 ease-in-out">
-            <IoSearchOutline size={20} /> Search
-          </button>
         </div>
       </div>
 
@@ -137,8 +152,7 @@ const Home = () => {
                         : "bg-gray-200 text-gray-500"
                     }`}
                     onClick={()=> {
-                      const id: string = item._id;
-                      item.available && navigate(`/cloth/${id}`)
+                      item.available && navigate(`/cloth/${item._id}`)
                     }}
                   >
                     {item.available ? "Rent Now" : "Not Available"}
